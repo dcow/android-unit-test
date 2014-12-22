@@ -11,29 +11,29 @@ import static org.fest.assertions.api.Assertions.assertThat
 import static org.mockito.Mockito.when
 
 public class PackageExtractorTest {
-  private PackageExtractor mTarget
-  private MockProvider mProvider
-  private ProductFlavorData mData
+  private PackageExtractor target
+  private MockProvider provider
+  private ProductFlavorData data
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mData = mProvider.provideDefaultConfigData()
-    mTarget = new PackageExtractor(mData, mProvider.provideLogger())
+    provider = new MockProvider()
+    data = provider.provideDefaultConfigData()
+    target = new PackageExtractor(data, provider.provideLogger())
   }
 
   @Test
   public void testGetPackageNameWithProvidedAppId() {
-    DefaultProductFlavor flavor = mData.productFlavor
+    DefaultProductFlavor flavor = data.productFlavor
     when(flavor.applicationId).thenReturn("package")
-    assertThat(mTarget.packageName).isEqualTo("package")
+    assertThat(target.packageName).isEqualTo("package")
   }
 
   @Test
   public void testGetPackageNameFromManifest() {
-    DefaultAndroidSourceSet source = mData.sourceSet
+    DefaultAndroidSourceSet source = data.sourceSet
     File manifest = new File(getClass().getResource("AndroidManifest.xml").toURI())
     when(source.manifestFile).thenReturn(manifest)
-    assertThat(mTarget.packageName).isEqualTo("com.example.app")
+    assertThat(target.packageName).isEqualTo("com.example.app")
   }
 }

@@ -18,23 +18,23 @@ import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
 public class MockProvider extends DependencyProvider {
-  private ModelManager mModelManager = mock(ModelManager.class)
-  private ConfigurationManager mConfigurationManager = mock(ConfigurationManager.class)
-  private TaskManager mTaskManager = mock(TaskManager.class)
-  private AndroidUnitTestPluginExtension mExtension = new AndroidUnitTestPluginExtension()
-  private ProductFlavorData mDefaultConfigData = createDummyFlavorData()
-  private boolean mIsAppPlugin
-  private BasePlugin mPlugin = mock(BasePlugin.class)
-  private PackageExtractor mPackageExtractor = mock(PackageExtractor.class)
-  private BaseExtension mAndroidExtension = mock(BaseExtension.class)
-  private ConfigurationContainer mConfigurations = mock(ConfigurationContainer.class)
-  private String mBootClasspath = "bootClasspath"
-  private DefaultDomainObjectSet<BaseVariant> mVariants = new DefaultDomainObjectSet<>(BaseVariant.class)
-  private File mReportDestinationDir = new File("reportDestinationDir")
-  private Logger mLogger = mock(Logger.class)
-  private MainHandler mHandler = mock(MainHandler.class)
-  private AppVariantWrapper mAppVariantWrapper = mock(AppVariantWrapper.class)
-  private LibraryVariantWrapper mLibraryVariantWrapper = mock(LibraryVariantWrapper.class)
+  private ModelManager modelManager = mock(ModelManager.class)
+  private ConfigurationManager configurationManager = mock(ConfigurationManager.class)
+  private TaskManager taskManager = mock(TaskManager.class)
+  private AndroidUnitTestPluginExtension extension = new AndroidUnitTestPluginExtension()
+  private ProductFlavorData defaultConfigData = createDummyFlavorData()
+  private boolean isAppPlugin
+  private BasePlugin plugin = mock(BasePlugin.class)
+  private PackageExtractor packageExtractor = mock(PackageExtractor.class)
+  private BaseExtension androidExtension = mock(BaseExtension.class)
+  private ConfigurationContainer configurations = mock(ConfigurationContainer.class)
+  private String bootClasspath = "bootClasspath"
+  private DefaultDomainObjectSet<BaseVariant> variants = new DefaultDomainObjectSet<>(BaseVariant.class)
+  private File reportDestinationDir = new File("reportDestinationDir")
+  private Logger logger = mock(Logger.class)
+  private MainHandler handler = mock(MainHandler.class)
+  private AppVariantWrapper appVariantWrapper = mock(AppVariantWrapper.class)
+  private LibraryVariantWrapper libraryVariantWrapper = mock(LibraryVariantWrapper.class)
 
   public MockProvider() {
     super(createProjectMock())
@@ -53,86 +53,86 @@ public class MockProvider extends DependencyProvider {
 
   @Override
   public AndroidUnitTestPluginExtension provideExtension() {
-    return mExtension
+    return extension
   }
 
   @Override
   public ModelManager provideModelManager() {
-    return mModelManager
+    return modelManager
   }
 
   @Override
   public ConfigurationManager provideConfigurationManager() {
-    return mConfigurationManager
+    return configurationManager
   }
 
   @Override
   public TaskManager provideTaskManager() {
-    return mTaskManager
+    return taskManager
   }
 
   @Override
   public ProductFlavorData provideDefaultConfigData() {
-    return mDefaultConfigData
+    return defaultConfigData
   }
 
   @Override
   public boolean isAppPlugin() {
-    return mIsAppPlugin
+    return isAppPlugin
   }
 
   @Override
   public BasePlugin provideAndroidPlugin() {
-    return mPlugin
+    return plugin
   }
 
   @Override
   public PackageExtractor providePackageExtractor() {
-    return mPackageExtractor
+    return packageExtractor
   }
 
   @Override
   public BaseExtension provideAndroidExtension() {
-    return mAndroidExtension
+    return androidExtension
   }
 
   @Override
   public ConfigurationContainer provideConfigurations() {
-    return mConfigurations
+    return configurations
   }
 
   @Override
   public String provideBootClasspath() {
-    return mBootClasspath
+    return bootClasspath
   }
 
   @Override
   public DefaultDomainObjectSet<BaseVariant> provideVariants() {
-    return mVariants
+    return variants
   }
 
   @Override
   public File provideReportDestinationDir() {
-    return mReportDestinationDir
+    return reportDestinationDir
   }
 
   @Override
   public Logger provideLogger() {
-    return mLogger
+    return logger
   }
 
   @Override
   public MainHandler provideHandler() {
-    return mHandler
+    return handler
   }
 
   @Override
   public AppVariantWrapper provideAppVariantWrapper(final ApplicationVariant applicationVariant) {
-    return mAppVariantWrapper
+    return appVariantWrapper
   }
 
   @Override
   public LibraryVariantWrapper provideLibraryVariantWrapper(final LibraryVariant libraryVariant) {
-    return mLibraryVariantWrapper
+    return libraryVariantWrapper
   }
 }

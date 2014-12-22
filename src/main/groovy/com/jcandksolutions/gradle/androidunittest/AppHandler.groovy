@@ -22,7 +22,7 @@ public class AppHandler extends MainHandler {
    */
   @Override
   protected VariantWrapper createVariantWrapper(final BaseVariant variant) {
-    return mProvider.provideAppVariantWrapper(variant as ApplicationVariant)
+    return provider.provideAppVariantWrapper(variant as ApplicationVariant)
   }
 
   /**

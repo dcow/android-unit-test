@@ -14,74 +14,74 @@ import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 public class MainHandlerTest {
-  private MainHandler mTarget
-  private VariantWrapper mVariantWrapper
-  private boolean mIsVariantInvalid
-  private MockProvider mProvider
-  private ModelManager mModelManager
-  private ConfigurationManager mConfigurationManager
-  private BaseVariant mVariant
-  private DefaultBuildType mBuildType
-  private AndroidUnitTestPluginExtension mExtension
-  private TaskManager mTaskManager
+  private MainHandler target
+  private VariantWrapper variantWrapper
+  private boolean isVariantInvalid
+  private MockProvider provider
+  private ModelManager modelManager
+  private ConfigurationManager configurationManager
+  private BaseVariant variant
+  private DefaultBuildType buildType
+  private AndroidUnitTestPluginExtension extension
+  private TaskManager taskManager
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mModelManager = mProvider.provideModelManager()
-    mConfigurationManager = mProvider.provideConfigurationManager()
-    mTaskManager = mProvider.provideTaskManager()
-    mExtension = mProvider.provideExtension()
-    DefaultDomainObjectSet<BaseVariant> variants = mProvider.provideVariants()
-    mVariant = mock(BaseVariant.class)
-    mBuildType = mock(DefaultBuildType)
-    when(mVariant.buildType).thenReturn(mBuildType)
-    variants.add(mVariant)
-    mVariantWrapper = mock(VariantWrapper.class)
-    mTarget = new MainHandler(mProvider) {
+    provider = new MockProvider()
+    modelManager = provider.provideModelManager()
+    configurationManager = provider.provideConfigurationManager()
+    taskManager = provider.provideTaskManager()
+    extension = provider.provideExtension()
+    DefaultDomainObjectSet<BaseVariant> variants = provider.provideVariants()
+    variant = mock(BaseVariant.class)
+    buildType = mock(DefaultBuildType)
+    when(variant.buildType).thenReturn(buildType)
+    variants.add(variant)
+    variantWrapper = mock(VariantWrapper.class)
+    target = new MainHandler(provider) {
       @Override
       protected VariantWrapper createVariantWrapper(final BaseVariant variant) {
-        return mVariantWrapper
+        return variantWrapper
       }
 
       @Override
       protected boolean isVariantInvalid(final BaseVariant baseVariant) {
-        return mIsVariantInvalid
+        return isVariantInvalid
       }
     }
   }
 
   @Test
   public void testRunWithNonDebuggableVariantAndNoReleaseBuildTypeEnabledDoNothing() {
-    when(mBuildType.debuggable).thenReturn(false)
-    mExtension.testReleaseBuildType = false
-    mTarget.run()
-    verify(mModelManager).register()
-    verify(mConfigurationManager).createNewConfigurations()
-    verify(mTaskManager, never()).createTestTask(any(VariantWrapper.class))
+    when(buildType.debuggable).thenReturn(false)
+    extension.testReleaseBuildType = false
+    target.run()
+    verify(modelManager).register()
+    verify(configurationManager).createNewConfigurations()
+    verify(taskManager, never()).createTestTask(any(VariantWrapper.class))
   }
 
   @Test
   public void testRunWithDebuggableVariant() {
-    when(mBuildType.debuggable).thenReturn(true)
-    mExtension.testReleaseBuildType = false
-    mTarget.run()
-    verify(mModelManager).register()
-    verify(mConfigurationManager).createNewConfigurations()
-    verify(mVariantWrapper).configureSourceSet()
-    verify(mTaskManager).createTestTask(mVariantWrapper)
-    verify(mModelManager).registerArtifact(mVariantWrapper)
+    when(buildType.debuggable).thenReturn(true)
+    extension.testReleaseBuildType = false
+    target.run()
+    verify(modelManager).register()
+    verify(configurationManager).createNewConfigurations()
+    verify(variantWrapper).configureSourceSet()
+    verify(taskManager).createTestTask(variantWrapper)
+    verify(modelManager).registerArtifact(variantWrapper)
   }
 
   @Test
   public void testRunWithNonDebuggableVariantAndReleaseBuildTypeEnabled() {
-    when(mBuildType.debuggable).thenReturn(false)
-    mExtension.testReleaseBuildType = true
-    mTarget.run()
-    verify(mModelManager).register()
-    verify(mConfigurationManager).createNewConfigurations()
-    verify(mVariantWrapper).configureSourceSet()
-    verify(mTaskManager).createTestTask(mVariantWrapper)
-    verify(mModelManager).registerArtifact(mVariantWrapper)
+    when(buildType.debuggable).thenReturn(false)
+    extension.testReleaseBuildType = true
+    target.run()
+    verify(modelManager).register()
+    verify(configurationManager).createNewConfigurations()
+    verify(variantWrapper).configureSourceSet()
+    verify(taskManager).createTestTask(variantWrapper)
+    verify(modelManager).registerArtifact(variantWrapper)
   }
 }

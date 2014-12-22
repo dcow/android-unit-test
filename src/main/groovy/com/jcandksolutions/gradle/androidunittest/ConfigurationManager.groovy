@@ -21,12 +21,12 @@ public class ConfigurationManager {
   public static final String TEST_COMPILE = 'testCompile'
   public static final String SOURCES_JAVADOC = '_SourcesJavadoc_'
   public static final String COMPILE = 'compile'
-  private final BaseExtension mAndroidExtension
-  private final ConfigurationContainer mConfigurations
-  private final Logger mLogger
-  private final AndroidUnitTestPluginExtension mPluginExtension
-  private final Project mProject
-  private final ModelManager mModelManager
+  private final BaseExtension androidExtension
+  private final ConfigurationContainer configurations
+  private final Logger logger
+  private final AndroidUnitTestPluginExtension pluginExtension
+  private final Project project
+  private final ModelManager modelManager
   /**
    * Instantiates a ConfigurationManager.
    * @param androidExtension The AndroidExtension.
@@ -37,12 +37,12 @@ public class ConfigurationManager {
    * @param logger The Logger.
    */
   public ConfigurationManager(BaseExtension androidExtension, ConfigurationContainer configurations, Project project, AndroidUnitTestPluginExtension pluginExtension, ModelManager modelManager, Logger logger) {
-    mAndroidExtension = androidExtension
-    mConfigurations = configurations
-    mProject = project
-    mPluginExtension = pluginExtension
-    mModelManager = modelManager
-    mLogger = logger
+    this.androidExtension = androidExtension
+    this.configurations = configurations
+    this.project = project
+    this.pluginExtension = pluginExtension
+    this.modelManager = modelManager
+    this.logger = logger
   }
 
   /**
@@ -50,32 +50,32 @@ public class ConfigurationManager {
    * different source sets.
    */
   public void createNewConfigurations() {
-    mLogger.info("----------------------------------------")
-    mLogger.info("Found configurations:")
+    logger.info("----------------------------------------")
+    logger.info("Found configurations:")
     List<String> buildTypeConfigNames = buildTypeConfigList
     List<String> flavorConfigNames = flavorConfigList
-    mLogger.info("----------------------------------------")
-    mLogger.info("Creating new configurations:")
+    logger.info("----------------------------------------")
+    logger.info("Creating new configurations:")
     List<String> buildTypeTestConfigNames = createTestConfigurations(buildTypeConfigNames)
     List<String> flavorTestConfigNames = createTestConfigurations(flavorConfigNames)
     createTestCompileTaskConfiguration()
-    mProject.afterEvaluate {
+    project.afterEvaluate {
       createSourcesJavadocConfiguration(buildTypeConfigNames, flavorConfigNames, buildTypeTestConfigNames, flavorTestConfigNames)
     }
   }
 
   private void createTestCompileTaskConfiguration() {
-    Configuration testCompileTaskConfiguration = mConfigurations.create(TEST_COMPILE)
-    testCompileTaskConfiguration.extendsFrom mConfigurations.getByName(COMPILE)
-    mLogger.info(TEST_COMPILE)
+    Configuration testCompileTaskConfiguration = configurations.create(TEST_COMPILE)
+    testCompileTaskConfiguration.extendsFrom configurations.getByName(COMPILE)
+    logger.info(TEST_COMPILE)
   }
 
   private List<String> createTestConfigurations(final List<String> configNames) {
     List<String> testConfigNames = []
     configNames.each { String configName ->
       String testConfigName = "test${configName.capitalize()}"
-      mLogger.info(testConfigName)
-      mConfigurations.create(testConfigName)
+      logger.info(testConfigName)
+      configurations.create(testConfigName)
       testConfigNames.add(testConfigName)
     }
     return testConfigNames
@@ -85,15 +85,15 @@ public class ConfigurationManager {
                                                  final List<String> flavorConfigNames,
                                                  final List<String> buildTypeTestConfigNames,
                                                  final List<String> flavorTestConfigNames) {
-    if (mPluginExtension.downloadTestDependenciesSources || mPluginExtension.downloadTestDependenciesJavadoc || mPluginExtension.downloadDependenciesSources || mPluginExtension.downloadDependenciesJavadoc) {
-      Configuration testSourcesJavadocConfiguration = mConfigurations.create(SOURCES_JAVADOC)
+    if (pluginExtension.downloadTestDependenciesSources || pluginExtension.downloadTestDependenciesJavadoc || pluginExtension.downloadDependenciesSources || pluginExtension.downloadDependenciesJavadoc) {
+      Configuration testSourcesJavadocConfiguration = configurations.create(SOURCES_JAVADOC)
       Map<String, Configuration> tempConfigurations = new HashMap<String, Configuration>();
-      copyDependencies(tempConfigurations, [COMPILE], mPluginExtension.downloadDependenciesSources, mPluginExtension.downloadDependenciesJavadoc)
-      copyDependencies(tempConfigurations, buildTypeConfigNames, mPluginExtension.downloadDependenciesSources, mPluginExtension.downloadDependenciesJavadoc)
-      copyDependencies(tempConfigurations, flavorConfigNames, mPluginExtension.downloadDependenciesSources, mPluginExtension.downloadDependenciesJavadoc)
-      copyDependencies(tempConfigurations, [TEST_COMPILE], mPluginExtension.downloadTestDependenciesSources, mPluginExtension.downloadTestDependenciesJavadoc)
-      copyDependencies(tempConfigurations, buildTypeTestConfigNames, mPluginExtension.downloadTestDependenciesSources, mPluginExtension.downloadTestDependenciesJavadoc)
-      copyDependencies(tempConfigurations, flavorTestConfigNames, mPluginExtension.downloadTestDependenciesSources, mPluginExtension.downloadTestDependenciesJavadoc)
+      copyDependencies(tempConfigurations, [COMPILE], pluginExtension.downloadDependenciesSources, pluginExtension.downloadDependenciesJavadoc)
+      copyDependencies(tempConfigurations, buildTypeConfigNames, pluginExtension.downloadDependenciesSources, pluginExtension.downloadDependenciesJavadoc)
+      copyDependencies(tempConfigurations, flavorConfigNames, pluginExtension.downloadDependenciesSources, pluginExtension.downloadDependenciesJavadoc)
+      copyDependencies(tempConfigurations, [TEST_COMPILE], pluginExtension.downloadTestDependenciesSources, pluginExtension.downloadTestDependenciesJavadoc)
+      copyDependencies(tempConfigurations, buildTypeTestConfigNames, pluginExtension.downloadTestDependenciesSources, pluginExtension.downloadTestDependenciesJavadoc)
+      copyDependencies(tempConfigurations, flavorTestConfigNames, pluginExtension.downloadTestDependenciesSources, pluginExtension.downloadTestDependenciesJavadoc)
       Iterator it = tempConfigurations.entrySet().iterator()
       while (it.hasNext()) {
         Configuration conf = it.next().value
@@ -104,14 +104,14 @@ public class ConfigurationManager {
         }
       }
       testSourcesJavadocConfiguration.extendsFrom(tempConfigurations.values().toArray(new Configuration[tempConfigurations.size()]))
-      mModelManager.registerJavadocSourcesArtifact(testSourcesJavadocConfiguration)
+      modelManager.registerJavadocSourcesArtifact(testSourcesJavadocConfiguration)
     }
   }
 
   private void copyDependencies(Map<String, Configuration> testConfigurations, List<String> configNames, boolean sources, boolean javadoc) {
     if (sources || javadoc) {
       configNames.each { String configName ->
-        Configuration conf = mConfigurations.getByName(configName)
+        Configuration conf = configurations.getByName(configName)
         conf.dependencies.all { Dependency dependency ->
           if (dependency instanceof ExternalModuleDependency && !testConfigurations.containsKey(dependency.name)) {
             ExternalModuleDependency copy = dependency.copy()
@@ -123,7 +123,7 @@ public class ConfigurationManager {
               DependencyArtifact artifact = new DefaultDependencyArtifact(copy.name, "jar", "jar", "javadoc", null);
               copy.addArtifact(artifact)
             }
-            Configuration tmp = mConfigurations.create("temp_${copy.name}")
+            Configuration tmp = configurations.create("temp_${copy.name}")
             testConfigurations[copy.name] = tmp
             tmp.dependencies.add(copy)
           }
@@ -134,9 +134,9 @@ public class ConfigurationManager {
 
   private List<String> getFlavorConfigList() {
     List<String> flavorConfigNames = []
-    mAndroidExtension.productFlavors.each { DefaultProductFlavor flavor ->
+    androidExtension.productFlavors.each { DefaultProductFlavor flavor ->
       String configName = "${flavor.name}Compile"
-      mLogger.info(configName)
+      logger.info(configName)
       flavorConfigNames.add(configName)
     }
     return flavorConfigNames
@@ -144,9 +144,9 @@ public class ConfigurationManager {
 
   private List<String> getBuildTypeConfigList() {
     List<String> buildTypeConfigNames = []
-    mAndroidExtension.buildTypes.each { DefaultBuildType buildType ->
+    androidExtension.buildTypes.each { DefaultBuildType buildType ->
       String configName = "${buildType.name}Compile"
-      mLogger.info(configName)
+      logger.info(configName)
       buildTypeConfigNames.add(configName)
     }
     return buildTypeConfigNames

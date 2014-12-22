@@ -10,27 +10,27 @@ import static org.fest.assertions.api.Assertions.assertThat
 import static org.mockito.Mockito.mock
 
 public class AppHandlerTest {
-  private AppHandler mTarget
-  private MockProvider mProvider
-  private VariantWrapper mWrapper
+  private AppHandler target
+  private MockProvider provider
+  private VariantWrapper wrapper
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mWrapper = mProvider.provideAppVariantWrapper(null)
-    mTarget = new AppHandler(mProvider)
+    provider = new MockProvider()
+    wrapper = provider.provideAppVariantWrapper(null)
+    target = new AppHandler(provider)
   }
 
   @Test
   public void testIsVariantInvalid() {
     BaseVariant variant = mock(BaseVariant.class)
-    assertThat(mTarget.isVariantInvalid(variant)).isFalse()
+    assertThat(target.isVariantInvalid(variant)).isFalse()
   }
 
   @Test
   public void testCreateVariantWrapper() {
     ApplicationVariant variant = mock(ApplicationVariant.class)
-    VariantWrapper wrapper = mTarget.createVariantWrapper(variant)
-    assertThat(wrapper).isEqualTo(mWrapper)
+    VariantWrapper wrapper = target.createVariantWrapper(variant)
+    assertThat(wrapper).isEqualTo(wrapper)
   }
 }

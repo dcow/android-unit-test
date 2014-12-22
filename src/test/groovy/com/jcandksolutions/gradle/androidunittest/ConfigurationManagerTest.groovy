@@ -33,22 +33,22 @@ import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 public class ConfigurationManagerTest {
-  private ConfigurationManager mTarget
-  private ConfigurationContainer mConfigurations
-  private BaseExtension mAndroidExtension
-  private Project mProject
-  private AndroidUnitTestPluginExtension mExtension
-  private ModelManager mModelManager
+  private ConfigurationManager target
+  private ConfigurationContainer configurations
+  private BaseExtension androidExtension
+  private Project project
+  private AndroidUnitTestPluginExtension extension
+  private ModelManager modelManager
 
   @Before
   public void setUp() {
     MockProvider provider = new MockProvider()
-    mConfigurations = provider.provideConfigurations()
-    mAndroidExtension = provider.provideAndroidExtension()
-    mExtension = provider.provideExtension()
-    mProject = provider.provideProject()
-    mModelManager = provider.provideModelManager()
-    mTarget = new ConfigurationManager(mAndroidExtension, mConfigurations, mProject, mExtension, mModelManager, provider.provideLogger())
+    configurations = provider.provideConfigurations()
+    androidExtension = provider.provideAndroidExtension()
+    extension = provider.provideExtension()
+    project = provider.provideProject()
+    modelManager = provider.provideModelManager()
+    target = new ConfigurationManager(androidExtension, configurations, project, extension, modelManager, provider.provideLogger())
   }
 
   @Test
@@ -58,12 +58,12 @@ public class ConfigurationManagerTest {
     DefaultBuildType buildType = mock(DefaultBuildType.class)
     when(buildType.name).thenReturn("debug")
     buildTypes.add(buildType)
-    when(mAndroidExtension.buildTypes).thenReturn(buildTypes)
+    when(androidExtension.buildTypes).thenReturn(buildTypes)
     NamedDomainObjectContainer<DefaultProductFlavor> flavors = project.container(DefaultProductFlavor)
     DefaultProductFlavor flavor = mock(DefaultProductFlavor.class)
     when(flavor.name).thenReturn("flavor")
     flavors.add(flavor)
-    when(mAndroidExtension.productFlavors).thenReturn(flavors)
+    when(androidExtension.productFlavors).thenReturn(flavors)
     Configuration testCompileConfiguration = mock(Configuration.class)
     DependencySet dependencies = new DefaultDependencySet("lol", new DefaultDomainObjectSet<Dependency>(Dependency.class))
     Dependency dependency = mock(ExternalModuleDependency.class)
@@ -75,26 +75,26 @@ public class ConfigurationManagerTest {
     DependencySet tmpDependencies = mock(DependencySet.class)
     when(tmpConf.dependencies).thenReturn(tmpDependencies)
     when(tmpConf.files).thenReturn(null).thenThrow(ResolveException.class)
-    when(mConfigurations.create(anyString())).thenReturn(tmpConf)
-    when(mConfigurations.create(ConfigurationManager.TEST_COMPILE)).thenReturn(testCompileConfiguration)
-    when(mConfigurations.getByName(ConfigurationManager.TEST_COMPILE)).thenReturn(testCompileConfiguration)
+    when(configurations.create(anyString())).thenReturn(tmpConf)
+    when(configurations.create(ConfigurationManager.TEST_COMPILE)).thenReturn(testCompileConfiguration)
+    when(configurations.getByName(ConfigurationManager.TEST_COMPILE)).thenReturn(testCompileConfiguration)
     Configuration compileConfiguration = mock(Configuration.class)
     when(compileConfiguration.dependencies).thenReturn(dependencies)
-    when(mConfigurations.getByName(ConfigurationManager.COMPILE)).thenReturn(compileConfiguration)
+    when(configurations.getByName(ConfigurationManager.COMPILE)).thenReturn(compileConfiguration)
     Configuration sourcesConfiguration = mock(Configuration.class)
-    when(mConfigurations.create(ConfigurationManager.SOURCES_JAVADOC)).thenReturn(sourcesConfiguration)
+    when(configurations.create(ConfigurationManager.SOURCES_JAVADOC)).thenReturn(sourcesConfiguration)
     Configuration debugConfiguration = mock(Configuration.class)
     when(debugConfiguration.dependencies).thenReturn(dependencies)
-    when(mConfigurations.getByName("debugCompile")).thenReturn(debugConfiguration)
+    when(configurations.getByName("debugCompile")).thenReturn(debugConfiguration)
     Configuration flavorConfiguration = mock(Configuration.class)
     when(flavorConfiguration.dependencies).thenReturn(dependencies)
-    when(mConfigurations.getByName("flavorCompile")).thenReturn(flavorConfiguration)
+    when(configurations.getByName("flavorCompile")).thenReturn(flavorConfiguration)
     Configuration testDebugConfiguration = mock(Configuration.class)
     when(testDebugConfiguration.dependencies).thenReturn(dependencies)
-    when(mConfigurations.getByName("testDebugCompile")).thenReturn(testDebugConfiguration)
+    when(configurations.getByName("testDebugCompile")).thenReturn(testDebugConfiguration)
     Configuration testFlavorConfiguration = mock(Configuration.class)
     when(testFlavorConfiguration.dependencies).thenReturn(dependencies)
-    when(mConfigurations.getByName("testFlavorCompile")).thenReturn(testFlavorConfiguration)
+    when(configurations.getByName("testFlavorCompile")).thenReturn(testFlavorConfiguration)
     doAnswer(new Answer<Void>() {
       @Override
       Void answer(final InvocationOnMock invocation) throws Throwable {
@@ -102,15 +102,15 @@ public class ConfigurationManagerTest {
         clo.run()
         return null
       }
-    } as Answer).when(mProject).afterEvaluate(any(Closure.class) as Closure)
-    mExtension.downloadDependenciesJavadoc = true
-    mExtension.downloadDependenciesSources = true
-    mExtension.downloadTestDependenciesJavadoc = true
-    mExtension.downloadTestDependenciesSources = true
-    mTarget.createNewConfigurations()
+    } as Answer).when(this.project).afterEvaluate(any(Closure.class) as Closure)
+    extension.downloadDependenciesJavadoc = true
+    extension.downloadDependenciesSources = true
+    extension.downloadTestDependenciesJavadoc = true
+    extension.downloadTestDependenciesSources = true
+    target.createNewConfigurations()
     verify(testCompileConfiguration).extendsFrom compileConfiguration
-    verify(mConfigurations).create("testDebugCompile")
-    verify(mConfigurations).create("testFlavorCompile")
+    verify(configurations).create("testDebugCompile")
+    verify(configurations).create("testFlavorCompile")
     ArgumentCaptor<DependencyArtifact> captor = ArgumentCaptor.forClass(DependencyArtifact.class)
     verify(dependency, times(2)).addArtifact(captor.capture())
     for (DependencyArtifact value in captor.allValues) {
@@ -120,6 +120,6 @@ public class ConfigurationManagerTest {
     ArgumentCaptor<Configuration> confCaptor = ArgumentCaptor.forClass(Configuration.class)
     verify(sourcesConfiguration, times(1)).extendsFrom(confCaptor.capture())
     assertThat(confCaptor.value).isEqualTo(tmpConf)
-    verify(mModelManager).registerJavadocSourcesArtifact(sourcesConfiguration)
+    verify(modelManager).registerJavadocSourcesArtifact(sourcesConfiguration)
   }
 }

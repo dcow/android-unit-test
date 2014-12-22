@@ -6,33 +6,33 @@ import com.android.builder.model.SourceProvider
  * Class that implements the SourceProvider needed for the Android plugin to register the model.
  */
 public class TestSourceProvider implements SourceProvider {
-  private VariantWrapper mVariantWrapper;
+  private VariantWrapper variantWrapper;
   /**
    * Instantiates a new TestSourceProvider.
    * @param variantWrapper The variant for which we are providing the TestSource.
    */
   public TestSourceProvider(VariantWrapper variantWrapper) {
-    mVariantWrapper = variantWrapper
+    this.variantWrapper = variantWrapper
   }
 
   @Override
   public String getName() {
-    return mVariantWrapper.sourceSet.name
+    return variantWrapper.sourceSet.name
   }
 
   @Override
   public File getManifestFile() {
-    return mVariantWrapper.mergedManifest
+    return variantWrapper.mergedManifest
   }
 
   @Override
   public Collection<File> getJavaDirectories() {
-    return mVariantWrapper.sourceSet.java.srcDirs
+    return variantWrapper.sourceSet.java.srcDirs
   }
 
   @Override
   public Collection<File> getResourcesDirectories() {
-    return mVariantWrapper.sourceSet.resources.srcDirs
+    return variantWrapper.sourceSet.resources.srcDirs
   }
 
   @Override
@@ -57,12 +57,12 @@ public class TestSourceProvider implements SourceProvider {
 
   @Override
   public Collection<File> getResDirectories() {
-    return Collections.singleton(mVariantWrapper.mergedResourcesDir)
+    return Collections.singleton(variantWrapper.mergedResourcesDir)
   }
 
   @Override
   public Collection<File> getAssetsDirectories() {
-    return Collections.singleton(mVariantWrapper.mergedAssetsDir)
+    return Collections.singleton(variantWrapper.mergedAssetsDir)
   }
 
   @Override

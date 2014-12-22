@@ -8,17 +8,17 @@ import org.gradle.api.logging.Logger
  * Class that handles the extraction of the Application ID.
  */
 public class PackageExtractor {
-  private final ProductFlavorData mData
-  private final Logger mLogger
-  private String mPackageName
+  private final ProductFlavorData data
+  private final Logger logger
+  private String packageName
   /**
    * Instantiates a new PackageExtractor.
    * @param data The data for the Default configuration of the project.
    * @param logger The logger.
    */
   public PackageExtractor(ProductFlavorData data, Logger logger) {
-    mLogger = logger
-    mData = data
+    this.logger = logger
+    this.data = data
   }
 
   /**
@@ -27,13 +27,13 @@ public class PackageExtractor {
    * @return The Application ID which usually is the package name.
    */
   public String getPackageName() {
-    if (mPackageName == null) {
-      mPackageName = mData.productFlavor.applicationId
-      if (mPackageName == null) {
-        mPackageName = VariantConfiguration.getManifestPackage(mData.sourceSet.manifestFile)
+    if (packageName == null) {
+      packageName = data.productFlavor.applicationId
+      if (packageName == null) {
+        packageName = VariantConfiguration.getManifestPackage(data.sourceSet.manifestFile)
       }
-      mLogger.info("main package: $mPackageName")
+      logger.info("main package: $packageName")
     }
-    return mPackageName
+    return packageName
   }
 }

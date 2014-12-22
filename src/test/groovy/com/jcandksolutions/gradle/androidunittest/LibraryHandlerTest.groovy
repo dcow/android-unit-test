@@ -11,29 +11,29 @@ import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
 public class LibraryHandlerTest {
-  private LibraryHandler mTarget
-  private MockProvider mProvider
-  private LibraryVariantWrapper mWrapper
+  private LibraryHandler target
+  private MockProvider provider
+  private LibraryVariantWrapper wrapper
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mWrapper = mProvider.provideLibraryVariantWrapper(null)
-    mTarget = new LibraryHandler(mProvider)
+    provider = new MockProvider()
+    wrapper = provider.provideLibraryVariantWrapper(null)
+    target = new LibraryHandler(provider)
   }
 
   @Test
   public void testIsVariantInvalid() {
     LibraryVariant variant = mock(LibraryVariant.class)
     when(variant.testVariant).thenReturn(null, mock(TestVariant.class))
-    assertThat(mTarget.isVariantInvalid(variant)).isTrue()
-    assertThat(mTarget.isVariantInvalid(variant)).isFalse()
+    assertThat(target.isVariantInvalid(variant)).isTrue()
+    assertThat(target.isVariantInvalid(variant)).isFalse()
   }
 
   @Test
   public void testCreateVariantWrapper() {
     LibraryVariant variant = mock(LibraryVariant.class)
-    VariantWrapper wrapper = mTarget.createVariantWrapper(variant)
-    assertThat(wrapper).isEqualTo(mWrapper)
+    VariantWrapper wrapper = target.createVariantWrapper(variant)
+    assertThat(wrapper).isEqualTo(wrapper)
   }
 }

@@ -18,13 +18,13 @@ import org.gradle.api.tasks.testing.TestReport
  * actually run the tests for that variant.
  */
 public class TaskManager {
-  private final Project mProject
-  private final String mBootClasspath
-  private final PackageExtractor mPackageExtractor
-  private final File mReportDestinationDir
-  private final Logger mLogger
-  private Task mTestClassesTask
-  private TestReport mTestReportTask
+  private final Project project
+  private final String bootClasspath
+  private final PackageExtractor packageExtractor
+  private final File reportDestinationDir
+  private final Logger logger
+  private Task testClassesTask
+  private TestReport testReportTask
   /**
    * Instantiates a TaskManager.
    * @param project The Project.
@@ -34,11 +34,11 @@ public class TaskManager {
    * @param logger The logger.
    */
   public TaskManager(Project project, String bootClasspath, PackageExtractor packageExtractor, File reportDestinationDir, Logger logger) {
-    mProject = project
-    mBootClasspath = bootClasspath
-    mPackageExtractor = packageExtractor
-    mReportDestinationDir = reportDestinationDir
-    mLogger = logger
+    this.project = project
+    this.bootClasspath = bootClasspath
+    this.packageExtractor = packageExtractor
+    this.reportDestinationDir = reportDestinationDir
+    this.logger = logger
   }
 
   /**
@@ -46,7 +46,7 @@ public class TaskManager {
    * @param variant The wrapper of the variant we are creating the test tasks for.
    */
   public void createTestTask(final VariantWrapper variant) {
-    Test testTask = mProject.tasks.create("test$variant.completeName", Test)
+    Test testTask = project.tasks.create("test$variant.completeName", Test)
     Task classesTask = configureClassesTask(variant)
     //make the test depend on the classesTask that handles the compilation and resources of tests
     testTask.dependsOn(classesTask)
@@ -83,34 +83,34 @@ public class TaskManager {
     testTask.systemProperties['android.manifest'] = variant.mergedManifest
     testTask.systemProperties['android.resources'] = variant.mergedResourcesDir
     testTask.systemProperties['android.assets'] = variant.mergedAssetsDir
-    testTask.systemProperties['android.package'] = mPackageExtractor.packageName
+    testTask.systemProperties['android.package'] = packageExtractor.packageName
     testReportTask.reportOn(testTask)
   }
 
   private TestReport getTestReportTask() {
-    if (mTestReportTask == null) {
-      mTestReportTask = mProject.tasks.create("test", TestReport)
-      mLogger.info("Created test task")
-      mTestReportTask.destinationDir = mReportDestinationDir
-      mTestReportTask.description = 'Runs all unit tests.'
-      mTestReportTask.group = JavaBasePlugin.VERIFICATION_GROUP
+    if (testReportTask == null) {
+      testReportTask = project.tasks.create("test", TestReport)
+      logger.info("Created test task")
+      testReportTask.destinationDir = reportDestinationDir
+      testReportTask.description = 'Runs all unit tests.'
+      testReportTask.group = JavaBasePlugin.VERIFICATION_GROUP
       //Make the check task call this report task which will call the test tasks.
-      mProject.tasks.getByName("check").dependsOn(mTestReportTask)
+      project.tasks.getByName("check").dependsOn(testReportTask)
     }
-    return mTestReportTask
+    return testReportTask
   }
 
   private Task getTestClassesTask() {
-    if (mTestClassesTask == null) {
-      mTestClassesTask = mProject.tasks.create("testClasses")
-      mTestClassesTask.description = 'Assembles the test classes directory.'
+    if (testClassesTask == null) {
+      testClassesTask = project.tasks.create("testClasses")
+      testClassesTask.description = 'Assembles the test classes directory.'
     }
-    return mTestClassesTask
+    return testClassesTask
   }
 
   private Task configureClassesTask(final VariantWrapper variant) {
-    Task classesTask = mProject.tasks.getByName(variant.sourceSet.classesTaskName)
-    mLogger.info("classTask: $classesTask.name")
+    Task classesTask = project.tasks.getByName(variant.sourceSet.classesTaskName)
+    logger.info("classTask: $classesTask.name")
     // Clear out the group/description of the classes plugin so it's not top-level.
     classesTask.group = null
     classesTask.description = null
@@ -118,19 +118,19 @@ public class TaskManager {
   }
 
   private JavaCompile configureTestCompileTask(final VariantWrapper variant) {
-    JavaCompile testCompileTask = mProject.tasks.getByName(variant.sourceSet.compileJavaTaskName) as JavaCompile
+    JavaCompile testCompileTask = project.tasks.getByName(variant.sourceSet.compileJavaTaskName) as JavaCompile
     testCompileTask.dependsOn(variant.androidCompileTask)
     testCompileTask.group = null
     testCompileTask.description = null
     testCompileTask.classpath = variant.classpath
     testCompileTask.source = variant.sourceSet.java
     testCompileTask.destinationDir = variant.compileDestinationDir
-    testCompileTask.options.bootClasspath = mBootClasspath
+    testCompileTask.options.bootClasspath = bootClasspath
     return testCompileTask
   }
 
   private Copy createResourcesCopyTask(final VariantWrapper variant) {
-    Copy resourcesCopyTask = mProject.tasks.create(variant.resourcesCopyTaskName, Copy)
+    Copy resourcesCopyTask = project.tasks.create(variant.resourcesCopyTaskName, Copy)
     resourcesCopyTask.from(variant.realMergedResourcesDir)
     resourcesCopyTask.into(variant.mergedResourcesDir)
     return resourcesCopyTask

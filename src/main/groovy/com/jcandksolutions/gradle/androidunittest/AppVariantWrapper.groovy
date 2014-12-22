@@ -30,6 +30,6 @@ public class AppVariantWrapper extends VariantWrapper {
    */
   @Override
   public Task getAndroidCompileTask() {
-    return mVariant.javaCompile
+    return variant.javaCompile
   }
 }

@@ -12,23 +12,23 @@ import org.gradle.api.artifacts.Configuration
 public class ModelManager {
   private static final String TEST_ARTIFACT_NAME = "_unit_test_"
   private static final String SOURCES_JAVADOC_ARTIFACT_NAME = "_sources_javadoc_"
-  private final BasePlugin mAndroidPlugin
-  private BaseVariant mDebugVariant
-  private Configuration mJavadocSourcesConfiguration
+  private final BasePlugin androidPlugin
+  private BaseVariant debugVariant
+  private Configuration javadocSourcesConfiguration
   /**
    * Instantiates a ModelManager.
    * @param androidPlugin The AndroidPlugin.
    */
   public ModelManager(BasePlugin androidPlugin) {
-    mAndroidPlugin = androidPlugin
+    this.androidPlugin = androidPlugin
   }
 
   /**
    * Registers with the Android plugin that there is a test ArtifactType of pure Java type.
    */
   public void register() {
-    mAndroidPlugin.registerArtifactType(TEST_ARTIFACT_NAME, true, ArtifactMetaData.TYPE_JAVA)
-    mAndroidPlugin.registerArtifactType(SOURCES_JAVADOC_ARTIFACT_NAME, true, ArtifactMetaData.TYPE_JAVA)
+    androidPlugin.registerArtifactType(TEST_ARTIFACT_NAME, true, ArtifactMetaData.TYPE_JAVA)
+    androidPlugin.registerArtifactType(SOURCES_JAVADOC_ARTIFACT_NAME, true, ArtifactMetaData.TYPE_JAVA)
   }
 
   /**
@@ -38,7 +38,7 @@ public class ModelManager {
    * @param variantWrapper The wrapper for the variant we generated tests for.
    */
   public void registerArtifact(VariantWrapper variantWrapper) {
-    mAndroidPlugin.registerJavaArtifact(TEST_ARTIFACT_NAME,
+    androidPlugin.registerJavaArtifact(TEST_ARTIFACT_NAME,
         variantWrapper.baseVariant,
         variantWrapper.sourceSet.compileJavaTaskName,
         variantWrapper.sourceSet.compileJavaTaskName,
@@ -46,9 +46,9 @@ public class ModelManager {
         variantWrapper.compileDestinationDir,
         new TestSourceProvider(variantWrapper))
     if (variantWrapper.baseVariant.name == "debug") {
-      mDebugVariant = variantWrapper.baseVariant
-      if (mJavadocSourcesConfiguration != null) {
-        registerJavadocSourcesArtifact(mJavadocSourcesConfiguration)
+      debugVariant = variantWrapper.baseVariant
+      if (javadocSourcesConfiguration != null) {
+        registerJavadocSourcesArtifact(javadocSourcesConfiguration)
       }
     }
   }
@@ -58,16 +58,16 @@ public class ModelManager {
    * @param configuration The Javadoc and Sources Configuration.
    */
   public void registerJavadocSourcesArtifact(Configuration configuration) {
-    if (mDebugVariant != null) {
-      mAndroidPlugin.registerJavaArtifact(SOURCES_JAVADOC_ARTIFACT_NAME,
-          mDebugVariant,
+    if (debugVariant != null) {
+      androidPlugin.registerJavaArtifact(SOURCES_JAVADOC_ARTIFACT_NAME,
+          debugVariant,
           "dummyAssembleTaskName",
           "dummyJavaCompileTaskName",
           configuration,
           new File("dummyClassesFolder"),
           null)
     } else {
-      mJavadocSourcesConfiguration = configuration
+      javadocSourcesConfiguration = configuration
     }
   }
 }

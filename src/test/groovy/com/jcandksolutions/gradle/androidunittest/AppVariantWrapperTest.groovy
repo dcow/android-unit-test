@@ -12,23 +12,23 @@ import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
 public class AppVariantWrapperTest {
-  private ApplicationVariant mVariant
-  private AppVariantWrapper mTarget
-  private Project mProject
-  private MockProvider mProvider
+  private ApplicationVariant variant
+  private AppVariantWrapper target
+  private Project project
+  private MockProvider provider
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mProject = mProvider.provideProject()
-    mVariant = mock(ApplicationVariant.class)
-    mTarget = new AppVariantWrapper(mVariant, mProject, mProvider.provideConfigurations(), mProvider.provideBootClasspath(), mProvider.provideLogger())
+    provider = new MockProvider()
+    project = provider.provideProject()
+    variant = mock(ApplicationVariant.class)
+    target = new AppVariantWrapper(variant, project, provider.provideConfigurations(), provider.provideBootClasspath(), provider.provideLogger())
   }
 
   @Test
   public void testGetAndroidCompileTask() {
     JavaCompile javaCompile = mock(JavaCompile.class)
-    when(mVariant.javaCompile).thenReturn(javaCompile)
-    assertThat(mTarget.androidCompileTask).isEqualTo(javaCompile)
+    when(variant.javaCompile).thenReturn(javaCompile)
+    assertThat(target.androidCompileTask).isEqualTo(javaCompile)
   }
 }

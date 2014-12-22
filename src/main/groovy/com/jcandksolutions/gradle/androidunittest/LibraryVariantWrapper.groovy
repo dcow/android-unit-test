@@ -31,6 +31,6 @@ public class LibraryVariantWrapper extends VariantWrapper {
    */
   @Override
   public Task getAndroidCompileTask() {
-    return mTestVariant.mergeResources
+    return testVariant.mergeResources
   }
 }

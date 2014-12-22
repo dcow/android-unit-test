@@ -39,100 +39,100 @@ import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 public class VariantWrapperTest {
-  private BaseVariant mVariant
-  private VariantWrapper mTarget
-  private File mMergedManifest
-  private Project mProject
-  private SourceSet mSourceSet
-  private SourceDirectorySet mResources
-  private SourceDirectorySet mJava
-  private ConfigurationContainer mConfigurations
-  private Configuration mConfiguration
-  private Configuration mDummyConfiguration
-  private FileCollection mClasspath
-  private FileCollection mRunpath
-  private FileCollection mMergedClasspathAndResources
-  private String mClassesTaskName
-  private File mMergeAssetsOutputDir
-  private FileCollection mTestClasspath
-  private MockProvider mProvider
+  private BaseVariant variant
+  private VariantWrapper target
+  private File mergedManifest
+  private Project project
+  private SourceSet sourceSet
+  private SourceDirectorySet resources
+  private SourceDirectorySet java
+  private ConfigurationContainer configurations
+  private Configuration configuration
+  private Configuration dummyConfiguration
+  private FileCollection classpath
+  private FileCollection runpath
+  private FileCollection mergedClasspathAndResources
+  private String classesTaskName
+  private File mergeAssetsOutputDir
+  private FileCollection testClasspath
+  private MockProvider provider
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mProject = mProvider.provideProject()
-    mConfigurations = mProvider.provideConfigurations()
-    String bootClasspathString = mProvider.provideBootClasspath()
+    provider = new MockProvider()
+    project = provider.provideProject()
+    configurations = provider.provideConfigurations()
+    String bootClasspathString = provider.provideBootClasspath()
     Convention convention = mock(Convention.class)
     SourceSetContainer sourceSets = mock(DefaultSourceSetContainer.class)
     Instantiator instantiator = mock(Instantiator.class)
     when(instantiator.newInstance(DefaultSourceSetContainer.class, null, null, instantiator)).thenReturn(sourceSets)
     JavaPluginConvention javaConvention = new JavaPluginConvention(mock(ProjectInternal.class), instantiator);
-    mSourceSet = mock(SourceSet.class)
-    mVariant = mock(ApplicationVariant.class)
-    mMergedManifest = mock(File.class)
+    sourceSet = mock(SourceSet.class)
+    variant = mock(ApplicationVariant.class)
+    mergedManifest = mock(File.class)
     List<BaseVariantOutput> outputs = new ArrayList<>()
     BaseVariantOutput output = mock(BaseVariantOutput.class)
     ManifestProcessorTask manTask = mock(ManifestProcessorTask.class)
     DefaultBuildType buildType = mock(DefaultBuildType.class)
-    mResources = mock(SourceDirectorySet.class)
-    mJava = mock(SourceDirectorySet.class)
+    resources = mock(SourceDirectorySet.class)
+    java = mock(SourceDirectorySet.class)
     DefaultProductFlavor free = mock(DefaultProductFlavor.class)
     DefaultProductFlavor paid = mock(DefaultProductFlavor.class)
     List<DefaultProductFlavor> productFlavors = [free, paid]
-    mConfiguration = mock(Configuration.class)
-    mDummyConfiguration = mock(Configuration.class)
+    configuration = mock(Configuration.class)
+    dummyConfiguration = mock(Configuration.class)
     JavaCompile androidJavaCompileTask = mock(JavaCompile.class)
     File javaCompileDestinationDir = new File("javaCompileDestinationDir")
     FileCollection javaCompileClasspath = mock(FileCollection.class)
     ConfigurableFileCollection mergedDestDirAndClassPath = mock(ConfigurableFileCollection.class)
-    mClasspath = mock(FileCollection.class)
+    classpath = mock(FileCollection.class)
     File buildDir = new File("build")
     ConfigurableFileCollection resourcesDir = mock(ConfigurableFileCollection.class)
-    mMergedClasspathAndResources = mock(FileCollection.class)
-    mRunpath = mock(FileCollection.class)
-    mClassesTaskName = "classesTaskName"
+    mergedClasspathAndResources = mock(FileCollection.class)
+    runpath = mock(FileCollection.class)
+    classesTaskName = "classesTaskName"
     MergeAssets mergeAssets = mock(MergeAssets.class)
-    mMergeAssetsOutputDir = mock(File.class)
-    mTestClasspath = mock(FileCollection.class)
+    mergeAssetsOutputDir = mock(File.class)
+    testClasspath = mock(FileCollection.class)
     ConfigurableFileCollection bootClasspath = mock(ConfigurableFileCollection.class)
-    when(mProject.file(anyString())).thenAnswer(new Answer<File>() {
+    when(project.file(anyString())).thenAnswer(new Answer<File>() {
       public File answer(InvocationOnMock invocation) {
         return new File(invocation.arguments[0] as String)
       }
     })
-    when(mProject.convention).thenReturn(convention)
-    when(mProject.buildDir).thenReturn(buildDir)
-    when(mProject.files(javaCompileDestinationDir, javaCompileClasspath)).thenReturn(mergedDestDirAndClassPath)
-    when(mProject.files("build${File.separator}resources${File.separator}testFreePaidDebug")).thenReturn(resourcesDir)
-    when(mProject.files(bootClasspathString)).thenReturn(bootClasspath)
+    when(project.convention).thenReturn(convention)
+    when(project.buildDir).thenReturn(buildDir)
+    when(project.files(javaCompileDestinationDir, javaCompileClasspath)).thenReturn(mergedDestDirAndClassPath)
+    when(project.files("build${File.separator}resources${File.separator}testFreePaidDebug")).thenReturn(resourcesDir)
+    when(project.files(bootClasspathString)).thenReturn(bootClasspath)
     when(convention.getPlugin(JavaPluginConvention)).thenReturn(javaConvention)
     when(free.name).thenReturn("free")
     when(paid.name).thenReturn("paid")
-    when(mVariant.productFlavors).thenReturn(productFlavors)
-    when(mVariant.outputs).thenReturn(outputs)
+    when(variant.productFlavors).thenReturn(productFlavors)
+    when(variant.outputs).thenReturn(outputs)
     outputs.add(output)
     when(output.processManifest).thenReturn(manTask)
-    when(mVariant.buildType).thenReturn(buildType)
-    when(mVariant.javaCompile).thenReturn(androidJavaCompileTask)
-    when(mVariant.dirName).thenReturn("variantDirName")
-    when(mVariant.mergeAssets).thenReturn(mergeAssets)
-    when(sourceSets.create("testFreePaidDebug")).thenReturn(mSourceSet)
-    when(mSourceSet.resources).thenReturn(mResources)
-    when(mSourceSet.java).thenReturn(mJava)
-    when(mSourceSet.classesTaskName).thenReturn(mClassesTaskName)
-    when(manTask.manifestOutputFile).thenReturn(mMergedManifest)
+    when(variant.buildType).thenReturn(buildType)
+    when(variant.javaCompile).thenReturn(androidJavaCompileTask)
+    when(variant.dirName).thenReturn("variantDirName")
+    when(variant.mergeAssets).thenReturn(mergeAssets)
+    when(sourceSets.create("testFreePaidDebug")).thenReturn(sourceSet)
+    when(sourceSet.resources).thenReturn(resources)
+    when(sourceSet.java).thenReturn(java)
+    when(sourceSet.classesTaskName).thenReturn(classesTaskName)
+    when(manTask.manifestOutputFile).thenReturn(mergedManifest)
     when(buildType.name).thenReturn("debug")
-    when(mConfigurations.create("_testFreePaidDebugCompile")).thenReturn(mConfiguration)
-    when(mConfigurations.findByName(anyString())).thenReturn(mDummyConfiguration)
+    when(configurations.create("_testFreePaidDebugCompile")).thenReturn(configuration)
+    when(configurations.findByName(anyString())).thenReturn(dummyConfiguration)
     when(androidJavaCompileTask.destinationDir).thenReturn(javaCompileDestinationDir)
     when(androidJavaCompileTask.classpath).thenReturn(javaCompileClasspath)
-    when(mClasspath.plus(resourcesDir)).thenReturn(mMergedClasspathAndResources)
-    when(mMergedClasspathAndResources.plus(any(SimpleFileCollection.class))).thenReturn(mRunpath)
-    when(mRunpath.plus(bootClasspath)).thenReturn(mTestClasspath)
-    when(mConfiguration.plus(mergedDestDirAndClassPath)).thenReturn(mClasspath)
-    when(mergeAssets.outputDir).thenReturn(mMergeAssetsOutputDir)
-    mTarget = new VariantWrapper(mVariant, mProject, mConfigurations, bootClasspathString, mProvider.provideLogger(), null) {
+    when(classpath.plus(resourcesDir)).thenReturn(mergedClasspathAndResources)
+    when(mergedClasspathAndResources.plus(any(SimpleFileCollection.class))).thenReturn(runpath)
+    when(runpath.plus(bootClasspath)).thenReturn(testClasspath)
+    when(configuration.plus(mergedDestDirAndClassPath)).thenReturn(classpath)
+    when(mergeAssets.outputDir).thenReturn(mergeAssetsOutputDir)
+    target = new VariantWrapper(variant, project, configurations, bootClasspathString, provider.provideLogger(), null) {
       @Override
       Task getAndroidCompileTask() {
         return null
@@ -142,59 +142,59 @@ public class VariantWrapperTest {
 
   @Test
   public void testConfigureSourceSet() {
-    mTarget.configureSourceSet()
+    target.configureSourceSet()
     ArgumentCaptor fileCaptor = ArgumentCaptor.forClass(File.class)
-    verify(mResources).srcDirs(fileCaptor.capture())
+    verify(resources).srcDirs(fileCaptor.capture())
     assertThat(fileCaptor.value).isEqualTo(new File("src${File.separator}test${File.separator}resources"))
     ArgumentCaptor fileArrayCaptor = ArgumentCaptor.forClass(ArrayList.class)
-    verify(mJava).setSrcDirs(fileArrayCaptor.capture())
+    verify(java).setSrcDirs(fileArrayCaptor.capture())
     assertThat(fileArrayCaptor.value).contains(new File("src${File.separator}test${File.separator}java"), new File("src${File.separator}testDebug${File.separator}java"), new File("src${File.separator}testFreePaid${File.separator}java"), new File("src${File.separator}testFreePaidDebug${File.separator}java"), new File("src${File.separator}testFree${File.separator}java"), new File("src${File.separator}testFreeDebug${File.separator}java"), new File("src${File.separator}testPaid${File.separator}java"), new File("src${File.separator}testPaidDebug${File.separator}java"))
-    verify(mConfiguration, times(4)).extendsFrom(mDummyConfiguration)
-    verify(mSourceSet).compileClasspath = mClasspath
+    verify(configuration, times(4)).extendsFrom(dummyConfiguration)
+    verify(sourceSet).compileClasspath = classpath
     ArgumentCaptor fileCollectionCaptor = ArgumentCaptor.forClass(FileCollection.class)
-    verify(mMergedClasspathAndResources).plus(fileCollectionCaptor.capture())
+    verify(mergedClasspathAndResources).plus(fileCollectionCaptor.capture())
     assertThat(fileCollectionCaptor.value.asPath).isEqualTo("build${File.separator}test-classes${File.separator}variantDirName".toString())
-    verify(mSourceSet).runtimeClasspath = mRunpath
-    verify(mSourceSet).compiledBy(mClassesTaskName)
+    verify(sourceSet).runtimeClasspath = runpath
+    verify(sourceSet).compiledBy(classesTaskName)
   }
 
   @Test
   public void testGetVariantReportDestination() {
-    assertThat(mTarget.variantReportDestination).isEqualTo(new File("build${File.separator}test-report${File.separator}variantDirName"))
+    assertThat(target.variantReportDestination).isEqualTo(new File("build${File.separator}test-report${File.separator}variantDirName"))
   }
 
   @Test
   public void testGetMergedManifest() {
-    assertThat(mTarget.mergedManifest).isEqualTo(mMergedManifest)
+    assertThat(target.mergedManifest).isEqualTo(mergedManifest)
   }
 
   @Test
   public void testGetMergedResourcesDir() {
-    assertThat(mTarget.mergedResourcesDir).isEqualTo(new File("build${File.separator}test-resources${File.separator}FreePaidDebug${File.separator}res"))
+    assertThat(target.mergedResourcesDir).isEqualTo(new File("build${File.separator}test-resources${File.separator}FreePaidDebug${File.separator}res"))
   }
 
   @Test
   public void testGetMergedAssetsDir() {
-    assertThat(mTarget.mergedAssetsDir).isEqualTo(mMergeAssetsOutputDir)
+    assertThat(target.mergedAssetsDir).isEqualTo(mergeAssetsOutputDir)
   }
 
   @Test
   public void testGetTestClasspath() {
-    assertThat(mTarget.testClasspath).isEqualTo(mTestClasspath)
+    assertThat(target.testClasspath).isEqualTo(testClasspath)
   }
 
   @Test
   public void testGetResourcesCopyTaskName() {
-    assertThat(mTarget.resourcesCopyTaskName).isEqualTo("copyFreePaidDebugTestResources")
+    assertThat(target.resourcesCopyTaskName).isEqualTo("copyFreePaidDebugTestResources")
   }
 
   @Test
   public void testGetBaseVariant() {
-    assertThat(mTarget.baseVariant).isEqualTo(mVariant)
+    assertThat(target.baseVariant).isEqualTo(variant)
   }
 
   @Test
   public void testGetRealMergedResourcesDir() {
-    assertThat(mTarget.realMergedResourcesDir).isEqualTo("build${File.separator}intermediates${File.separator}res${File.separator}variantDirName".toString())
+    assertThat(target.realMergedResourcesDir).isEqualTo("build${File.separator}intermediates${File.separator}res${File.separator}variantDirName".toString())
   }
 }

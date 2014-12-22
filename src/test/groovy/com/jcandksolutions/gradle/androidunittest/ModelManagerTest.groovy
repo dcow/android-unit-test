@@ -19,56 +19,56 @@ import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 public class ModelManagerTest {
-  private ModelManager mTarget
-  private BasePlugin mPlugin
-  private MockProvider mProvider
-  private VariantWrapper mVariantWrapper
-  private BaseVariant mVariant
-  private String mJavaCompileTaskName
-  private Configuration mConfiguration
-  private File mClassesFolder
+  private ModelManager target
+  private BasePlugin plugin
+  private MockProvider provider
+  private VariantWrapper variantWrapper
+  private BaseVariant variant
+  private String javaCompileTaskName
+  private Configuration configuration
+  private File classesFolder
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    mPlugin = mProvider.provideAndroidPlugin()
-    mTarget = new ModelManager(mPlugin)
-    mVariantWrapper = mock(VariantWrapper.class)
-    mVariant = mock(BaseVariant.class)
-    when(mVariantWrapper.baseVariant).thenReturn(mVariant)
-    when(mVariant.name).thenReturn("debug")
+    provider = new MockProvider()
+    plugin = provider.provideAndroidPlugin()
+    target = new ModelManager(plugin)
+    variantWrapper = mock(VariantWrapper.class)
+    variant = mock(BaseVariant.class)
+    when(variantWrapper.baseVariant).thenReturn(variant)
+    when(variant.name).thenReturn("debug")
     SourceSet sourceSet = mock(SourceSet.class)
-    when(mVariantWrapper.sourceSet).thenReturn(sourceSet)
-    mJavaCompileTaskName = "mJavaCompileTaskName"
-    when(sourceSet.compileJavaTaskName).thenReturn(mJavaCompileTaskName)
-    mConfiguration = mock(Configuration.class)
-    when(mVariantWrapper.configuration).thenReturn(mConfiguration)
-    mClassesFolder = new File("classes")
-    when(mVariantWrapper.compileDestinationDir).thenReturn(mClassesFolder)
+    when(variantWrapper.sourceSet).thenReturn(sourceSet)
+    javaCompileTaskName = "javaCompileTaskName"
+    when(sourceSet.compileJavaTaskName).thenReturn(javaCompileTaskName)
+    configuration = mock(Configuration.class)
+    when(variantWrapper.configuration).thenReturn(configuration)
+    classesFolder = new File("classes")
+    when(variantWrapper.compileDestinationDir).thenReturn(classesFolder)
   }
 
   @Test
   public void testRegister() {
-    mTarget.register()
-    verify(mPlugin).registerArtifactType("_unit_test_", true, ArtifactMetaData.TYPE_JAVA)
-    verify(mPlugin).registerArtifactType("_sources_javadoc_", true, ArtifactMetaData.TYPE_JAVA)
+    target.register()
+    verify(plugin).registerArtifactType("_unit_test_", true, ArtifactMetaData.TYPE_JAVA)
+    verify(plugin).registerArtifactType("_sources_javadoc_", true, ArtifactMetaData.TYPE_JAVA)
   }
 
   @Test
   public void testRegisterArtifact() {
-    mTarget.registerArtifact(mVariantWrapper)
+    target.registerArtifact(variantWrapper)
     ArgumentCaptor<TestSourceProvider> captor = ArgumentCaptor.forClass(TestSourceProvider.class)
-    verify(mPlugin).registerJavaArtifact(eq("_unit_test_"), eq(mVariant), eq(mJavaCompileTaskName), eq(mJavaCompileTaskName), eq(mConfiguration), eq(mClassesFolder), captor.capture())
+    verify(plugin).registerJavaArtifact(eq("_unit_test_"), eq(variant), eq(javaCompileTaskName), eq(javaCompileTaskName), eq(configuration), eq(classesFolder), captor.capture())
     assertThat(captor.value).isExactlyInstanceOf(TestSourceProvider.class)
   }
 
   @Test
   public void testRegisterJavadocSourcesArtifact() {
     Configuration config = mock(Configuration.class)
-    mTarget.registerArtifact(mVariantWrapper)
-    mTarget.registerJavadocSourcesArtifact(config)
+    target.registerArtifact(variantWrapper)
+    target.registerJavadocSourcesArtifact(config)
     ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class)
-    verify(mPlugin).registerJavaArtifact(eq("_sources_javadoc_"), eq(mVariant), eq("dummyAssembleTaskName"), eq("dummyJavaCompileTaskName"), eq(config), fileCaptor.capture(), isNull(SourceProvider.class))
+    verify(plugin).registerJavaArtifact(eq("_sources_javadoc_"), eq(variant), eq("dummyAssembleTaskName"), eq("dummyJavaCompileTaskName"), eq(config), fileCaptor.capture(), isNull(SourceProvider.class))
     assertThat(fileCaptor.value).isEqualTo(new File("dummyClassesFolder"))
   }
 }

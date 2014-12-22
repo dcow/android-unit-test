@@ -4,18 +4,18 @@ package com.jcandksolutions.gradle.androidunittest
  * Class that handles the extension of the plugin for configuration.
  */
 public class AndroidUnitTestPluginExtension {
-  private boolean mTestReleaseBuildType
-  private boolean mDownloadTestDependenciesSources
-  private boolean mDownloadTestDependenciesJavadoc
-  private boolean mDownloadDependenciesJavadoc
-  private boolean mDownloadDependenciesSources
+  private boolean testReleaseBuildType
+  private boolean downloadTestDependenciesSources
+  private boolean downloadTestDependenciesJavadoc
+  private boolean downloadDependenciesJavadoc
+  private boolean downloadDependenciesSources
   /**
    * Retrieves the TestReleaseBuildType property which enables testing if release build types. Only
    * works on App projects, not library projects.
    * @return {@code true} if property enabled, {@code false} otherwise.
    */
   public boolean getTestReleaseBuildType() {
-    return mTestReleaseBuildType;
+    return testReleaseBuildType;
   }
 
   /**
@@ -24,7 +24,7 @@ public class AndroidUnitTestPluginExtension {
    * @param value The value to set.
    */
   public void setTestReleaseBuildType(boolean value) {
-    mTestReleaseBuildType = value;
+    testReleaseBuildType = value;
   }
 
   /**
@@ -33,7 +33,7 @@ public class AndroidUnitTestPluginExtension {
    * @return {@code true} if property enabled, {@code false} otherwise.
    */
   public boolean isDownloadTestDependenciesSources() {
-    return mDownloadTestDependenciesSources
+    return downloadTestDependenciesSources
   }
 
   /**
@@ -42,7 +42,7 @@ public class AndroidUnitTestPluginExtension {
    * @param value The value to set.
    */
   public void setDownloadTestDependenciesSources(boolean value) {
-    mDownloadTestDependenciesSources = value
+    downloadTestDependenciesSources = value
   }
 
   /**
@@ -51,7 +51,7 @@ public class AndroidUnitTestPluginExtension {
    * @return {@code true} if property enabled, {@code false} otherwise.
    */
   public boolean isDownloadTestDependenciesJavadoc() {
-    return mDownloadTestDependenciesJavadoc
+    return downloadTestDependenciesJavadoc
   }
 
   /**
@@ -60,7 +60,7 @@ public class AndroidUnitTestPluginExtension {
    * @param value The value to set.
    */
   public void setDownloadTestDependenciesJavadoc(boolean value) {
-    mDownloadTestDependenciesJavadoc = value
+    downloadTestDependenciesJavadoc = value
   }
 
   /**
@@ -69,7 +69,7 @@ public class AndroidUnitTestPluginExtension {
    * @return {@code true} if property enabled, {@code false} otherwise.
    */
   public boolean isDownloadDependenciesSources() {
-    return mDownloadDependenciesSources
+    return downloadDependenciesSources
   }
 
   /**
@@ -78,7 +78,7 @@ public class AndroidUnitTestPluginExtension {
    * @param value The value to set.
    */
   public void setDownloadDependenciesSources(boolean value) {
-    mDownloadDependenciesSources = value
+    downloadDependenciesSources = value
   }
 
   /**
@@ -87,7 +87,7 @@ public class AndroidUnitTestPluginExtension {
    * @return {@code true} if property enabled, {@code false} otherwise.
    */
   public boolean isDownloadDependenciesJavadoc() {
-    return mDownloadDependenciesJavadoc
+    return downloadDependenciesJavadoc
   }
 
   /**
@@ -96,6 +96,6 @@ public class AndroidUnitTestPluginExtension {
    * @param value The value to set.
    */
   public void setDownloadDependenciesJavadoc(boolean value) {
-    mDownloadDependenciesJavadoc = value
+    downloadDependenciesJavadoc = value
   }
 }

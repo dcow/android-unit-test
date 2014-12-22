@@ -17,29 +17,29 @@ import org.gradle.api.tasks.SourceSet
  * Base class that wraps the info of the variant for easier retrieval of the actual data needed.
  */
 public abstract class VariantWrapper {
-  protected final Project mProject
-  protected final ConfigurationContainer mConfigurations
-  protected final BaseVariant mVariant
-  protected final TestVariant mTestVariant
-  protected final Logger mLogger
-  protected ArrayList<File> mTestsSourcePath
-  protected Configuration mConfiguration
-  private final String mBootClasspath
-  private FileCollection mClasspath
-  private File mCompileDestinationDir
-  private GString mCompleteName
-  private SourceSet mSourceSet
-  private FileCollection mRunPath
-  private File mMergedResourcesDir
-  private File mMergedManifest
-  private File mMergedAssetsDir
-  private String mResourcesCopyTaskName
-  private String mRealMergedResourcesDir
-  private List<String> mFlavorList
-  private String mFlavorName
-  private String mBuildTypeName
-  private FileCollection mTestClasspath
-  private File mVariantReportDestination
+  protected final Project project
+  protected final ConfigurationContainer configurations
+  protected final BaseVariant variant
+  protected final TestVariant testVariant
+  protected final Logger logger
+  protected ArrayList<File> testsSourcePath
+  protected Configuration configuration
+  private final String bootClasspath
+  private FileCollection classpath
+  private File compileDestinationDir
+  private GString completeName
+  private SourceSet sourceSet
+  private FileCollection runPath
+  private File mergedResourcesDir
+  private File mergedManifest
+  private File mergedAssetsDir
+  private String resourcesCopyTaskName
+  private String realMergedResourcesDir
+  private List<String> flavorList
+  private String flavorName
+  private String buildTypeName
+  private FileCollection testClasspath
+  private File variantReportDestination
   /**
    * Instantiates a new VariantWrapper.
    * @param variant The Variant to wrap.
@@ -50,12 +50,12 @@ public abstract class VariantWrapper {
    * @param testVariant The Test Variant of the variant. Can be null for library projects.
    */
   public VariantWrapper(BaseVariant variant, Project project, ConfigurationContainer configurations, String bootClasspath, Logger logger, TestVariant testVariant) {
-    mVariant = variant
-    mProject = project
-    mConfigurations = configurations
-    mBootClasspath = bootClasspath
-    mTestVariant = testVariant
-    mLogger = logger
+    this.variant = variant
+    this.project = project
+    this.configurations = configurations
+    this.bootClasspath = bootClasspath
+    this.testVariant = testVariant
+    this.logger = logger
   }
 
   /**
@@ -63,7 +63,7 @@ public abstract class VariantWrapper {
    */
   public void configureSourceSet() {
     //Add standard resources directory
-    sourceSet.resources.srcDirs(mProject.file("src${File.separator}test${File.separator}resources"))
+    sourceSet.resources.srcDirs(project.file("src${File.separator}test${File.separator}resources"))
     sourceSet.java.srcDirs = testsSourcePath
     sourceSet.compileClasspath = classpath
     sourceSet.runtimeClasspath = runPath
@@ -86,18 +86,18 @@ public abstract class VariantWrapper {
    * @return The sourcePath.
    */
   protected ArrayList<File> getTestsSourcePath() {
-    if (mTestsSourcePath == null) {
-      mTestsSourcePath = []
-      mTestsSourcePath.add(mProject.file("src${File.separator}test${File.separator}java"))
-      mTestsSourcePath.add(mProject.file("src${File.separator}test$buildTypeName${File.separator}java"))
-      mTestsSourcePath.add(mProject.file("src${File.separator}test$flavorName${File.separator}java"))
-      mTestsSourcePath.add(mProject.file("src${File.separator}test$flavorName$buildTypeName${File.separator}java"))
+    if (testsSourcePath == null) {
+      testsSourcePath = []
+      testsSourcePath.add(project.file("src${File.separator}test${File.separator}java"))
+      testsSourcePath.add(project.file("src${File.separator}test$buildTypeName${File.separator}java"))
+      testsSourcePath.add(project.file("src${File.separator}test$flavorName${File.separator}java"))
+      testsSourcePath.add(project.file("src${File.separator}test$flavorName$buildTypeName${File.separator}java"))
       flavorList.each { String flavor ->
-        mTestsSourcePath.add(mProject.file("src${File.separator}test$flavor${File.separator}java"))
-        mTestsSourcePath.add(mProject.file("src${File.separator}test$flavor$buildTypeName${File.separator}java"))
+        testsSourcePath.add(project.file("src${File.separator}test$flavor${File.separator}java"))
+        testsSourcePath.add(project.file("src${File.separator}test$flavor$buildTypeName${File.separator}java"))
       }
     }
-    return mTestsSourcePath
+    return testsSourcePath
   }
 
   /**
@@ -106,7 +106,7 @@ public abstract class VariantWrapper {
    * @return The dir name of the variant.
    */
   public String getDirName() {
-    return mVariant.dirName
+    return variant.dirName
   }
 
   /**
@@ -114,10 +114,10 @@ public abstract class VariantWrapper {
    * @return The path.
    */
   public File getMergedManifest() {
-    if (mMergedManifest == null) {
-      mMergedManifest = mVariant.outputs.first().processManifest.manifestOutputFile
+    if (mergedManifest == null) {
+      mergedManifest = variant.outputs.first().processManifest.manifestOutputFile
     }
-    return mMergedManifest
+    return mergedManifest
   }
 
   /**
@@ -126,10 +126,10 @@ public abstract class VariantWrapper {
    * @return The dir with the copied merged resources.
    */
   public File getMergedResourcesDir() {
-    if (mMergedResourcesDir == null) {
-      mMergedResourcesDir = mProject.file("$mProject.buildDir${File.separator}test-resources${File.separator}$completeName${File.separator}res")
+    if (mergedResourcesDir == null) {
+      mergedResourcesDir = project.file("$project.buildDir${File.separator}test-resources${File.separator}$completeName${File.separator}res")
     }
-    return mMergedResourcesDir
+    return mergedResourcesDir
   }
 
   /**
@@ -137,10 +137,10 @@ public abstract class VariantWrapper {
    * @return The merged assets dir.
    */
   public File getMergedAssetsDir() {
-    if (mMergedAssetsDir == null) {
-      mMergedAssetsDir = mVariant.mergeAssets.outputDir
+    if (mergedAssetsDir == null) {
+      mergedAssetsDir = variant.mergeAssets.outputDir
     }
-    return mMergedAssetsDir
+    return mergedAssetsDir
   }
 
   /**
@@ -150,21 +150,21 @@ public abstract class VariantWrapper {
    * @return The configuration for the test variant.
    */
   public Configuration getConfiguration() {
-    if (mConfiguration == null) {
+    if (configuration == null) {
       //we create the sourceset first otherwise the needed configurations won't be available for the compile classpath
       sourceSet
       ArrayList<GString> configurationNames = ["${ConfigurationManager.TEST_COMPILE}"]
       configurationNames.add("test${buildTypeName}Compile")
       flavorList.each { String flavor ->
         configurationNames.add("test${flavor}Compile")
-        mLogger.info("Reading configuration: test${flavor}Compile")
+        logger.info("Reading configuration: test${flavor}Compile")
       }
-      mConfiguration = mConfigurations.create("_test${completeName.capitalize()}Compile")
+      configuration = configurations.create("_test${completeName.capitalize()}Compile")
       configurationNames.each { configName ->
-        mConfiguration.extendsFrom(mConfigurations.findByName(configName))
+        configuration.extendsFrom(configurations.findByName(configName))
       }
     }
-    return mConfiguration
+    return configuration
   }
 
   /**
@@ -173,10 +173,10 @@ public abstract class VariantWrapper {
    * @return The classpath.
    */
   public FileCollection getClasspath() {
-    if (mClasspath == null) {
-      mClasspath = configuration.plus(mProject.files(mVariant.javaCompile.destinationDir, mVariant.javaCompile.classpath))
+    if (classpath == null) {
+      classpath = configuration.plus(project.files(variant.javaCompile.destinationDir, variant.javaCompile.classpath))
     }
-    return mClasspath
+    return classpath
   }
 
   /**
@@ -184,10 +184,10 @@ public abstract class VariantWrapper {
    * @return The testClasspath.
    */
   public FileCollection getTestClasspath() {
-    if (mTestClasspath == null) {
-      mTestClasspath = runPath.plus(mProject.files(mBootClasspath))
+    if (testClasspath == null) {
+      testClasspath = runPath.plus(project.files(bootClasspath))
     }
-    return mTestClasspath
+    return testClasspath
   }
 
   /**
@@ -196,10 +196,10 @@ public abstract class VariantWrapper {
    * @return The destination dir.
    */
   public File getCompileDestinationDir() {
-    if (mCompileDestinationDir == null) {
-      mCompileDestinationDir = new File("$mProject.buildDir${File.separator}test-classes${File.separator}$mVariant.dirName")
+    if (compileDestinationDir == null) {
+      compileDestinationDir = new File("$project.buildDir${File.separator}test-classes${File.separator}$variant.dirName")
     }
-    return mCompileDestinationDir
+    return compileDestinationDir
   }
 
   /**
@@ -208,10 +208,10 @@ public abstract class VariantWrapper {
    * @return The complete name.
    */
   public GString getCompleteName() {
-    if (mCompleteName == null) {
-      mCompleteName = "$flavorName$buildTypeName"
+    if (completeName == null) {
+      completeName = "$flavorName$buildTypeName"
     }
-    return mCompleteName
+    return completeName
   }
 
   /**
@@ -220,10 +220,10 @@ public abstract class VariantWrapper {
    * @return The build type.
    */
   protected String getBuildTypeName() {
-    if (mBuildTypeName == null) {
-      mBuildTypeName = mVariant.buildType.name.capitalize()
+    if (buildTypeName == null) {
+      buildTypeName = variant.buildType.name.capitalize()
     }
-    return mBuildTypeName
+    return buildTypeName
   }
 
   /**
@@ -231,13 +231,13 @@ public abstract class VariantWrapper {
    * @return The list of flavors. Empty if no flavors defined.
    */
   protected List<String> getFlavorList() {
-    if (mFlavorList == null) {
-      mFlavorList = mVariant.productFlavors.collect { it.name.capitalize() }
-      if (mFlavorList.empty) {
-        mFlavorList = [""]
+    if (flavorList == null) {
+      flavorList = variant.productFlavors.collect { it.name.capitalize() }
+      if (flavorList.empty) {
+        flavorList = [""]
       }
     }
-    return mFlavorList
+    return flavorList
   }
 
   /**
@@ -246,10 +246,10 @@ public abstract class VariantWrapper {
    * @return The flavor name.
    */
   protected String getFlavorName() {
-    if (mFlavorName == null) {
-      mFlavorName = flavorList.join("")
+    if (flavorName == null) {
+      flavorName = flavorList.join("")
     }
-    return mFlavorName
+    return flavorName
   }
 
   /**
@@ -263,11 +263,11 @@ public abstract class VariantWrapper {
    * @return The test SourceSet.
    */
   protected SourceSet getSourceSet() {
-    if (mSourceSet == null) {
-      JavaPluginConvention javaConvention = mProject.convention.getPlugin(JavaPluginConvention)
-      mSourceSet = javaConvention.sourceSets.create("test$completeName")
+    if (sourceSet == null) {
+      JavaPluginConvention javaConvention = project.convention.getPlugin(JavaPluginConvention)
+      sourceSet = javaConvention.sourceSets.create("test$completeName")
     }
-    return mSourceSet
+    return sourceSet
   }
 
   /**
@@ -276,10 +276,10 @@ public abstract class VariantWrapper {
    * @return The Runpath.
    */
   protected FileCollection getRunPath() {
-    if (mRunPath == null) {
-      mRunPath = classpath.plus(mProject.files("$mProject.buildDir${File.separator}resources${File.separator}test$completeName")).plus(new SimpleFileCollection(compileDestinationDir))
+    if (runPath == null) {
+      runPath = classpath.plus(project.files("$project.buildDir${File.separator}resources${File.separator}test$completeName")).plus(new SimpleFileCollection(compileDestinationDir))
     }
-    return mRunPath
+    return runPath
   }
 
   /**
@@ -288,10 +288,10 @@ public abstract class VariantWrapper {
    * @return The ResourcesCopyTaskName.
    */
   public String getResourcesCopyTaskName() {
-    if (mResourcesCopyTaskName == null) {
-      mResourcesCopyTaskName = "copy${completeName}TestResources"
+    if (resourcesCopyTaskName == null) {
+      resourcesCopyTaskName = "copy${completeName}TestResources"
     }
-    return mResourcesCopyTaskName
+    return resourcesCopyTaskName
   }
 
   /**
@@ -299,10 +299,10 @@ public abstract class VariantWrapper {
    * @return The path string.
    */
   public String getRealMergedResourcesDir() {
-    if (mRealMergedResourcesDir == null) {
-      mRealMergedResourcesDir = "$mProject.buildDir${File.separator}intermediates${File.separator}res${File.separator}$mVariant.dirName"
+    if (realMergedResourcesDir == null) {
+      realMergedResourcesDir = "$project.buildDir${File.separator}intermediates${File.separator}res${File.separator}$variant.dirName"
     }
-    return mRealMergedResourcesDir
+    return realMergedResourcesDir
   }
 
   /**
@@ -310,7 +310,7 @@ public abstract class VariantWrapper {
    * @return The Base variant.
    */
   public BaseVariant getBaseVariant() {
-    return mVariant;
+    return variant;
   }
 
   /**
@@ -319,9 +319,9 @@ public abstract class VariantWrapper {
    * @return The report destination.
    */
   public File getVariantReportDestination() {
-    if (mVariantReportDestination == null) {
-      mVariantReportDestination = mProject.file("$mProject.buildDir${File.separator}test-report${File.separator}$dirName")
+    if (variantReportDestination == null) {
+      variantReportDestination = project.file("$project.buildDir${File.separator}test-report${File.separator}$dirName")
     }
-    return mVariantReportDestination
+    return variantReportDestination
   }
 }

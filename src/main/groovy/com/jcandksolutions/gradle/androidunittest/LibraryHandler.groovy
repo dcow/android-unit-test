@@ -22,7 +22,7 @@ public class LibraryHandler extends MainHandler {
    */
   @Override
   protected VariantWrapper createVariantWrapper(final BaseVariant variant) {
-    return mProvider.provideLibraryVariantWrapper(variant as LibraryVariant)
+    return provider.provideLibraryVariantWrapper(variant as LibraryVariant)
   }
 
   /**

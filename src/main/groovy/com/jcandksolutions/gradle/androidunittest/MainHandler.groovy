@@ -10,25 +10,25 @@ import org.gradle.api.logging.Logger
  * creation of the Configurations, SourceSets, Extension, Tasks and Model.
  */
 public abstract class MainHandler {
-  protected final ModelManager mModelManager
-  protected final TaskManager mTaskManager
-  protected final AndroidUnitTestPluginExtension mExtension
-  protected final Logger mLogger
-  protected final DependencyProvider mProvider
-  private final ConfigurationManager mConfigurationManager
-  private final DefaultDomainObjectSet<BaseVariant> mVariants
+  protected final ModelManager modelManager
+  protected final TaskManager taskManager
+  protected final AndroidUnitTestPluginExtension extension
+  protected final Logger logger
+  protected final DependencyProvider provider
+  private final ConfigurationManager configurationManager
+  private final DefaultDomainObjectSet<BaseVariant> variants
   /**
    * Instantiates a MainHandler.
    * @param provider The Dependency Provider for the plugin.
    */
   public MainHandler(DependencyProvider provider) {
-    mProvider = provider
-    mModelManager = mProvider.provideModelManager()
-    mTaskManager = mProvider.provideTaskManager()
-    mExtension = mProvider.provideExtension()
-    mConfigurationManager = mProvider.provideConfigurationManager()
-    mLogger = mProvider.provideLogger()
-    mVariants = mProvider.provideVariants()
+    this.provider = provider
+    modelManager = provider.provideModelManager()
+    taskManager = provider.provideTaskManager()
+    extension = provider.provideExtension()
+    configurationManager = provider.provideConfigurationManager()
+    logger = provider.provideLogger()
+    variants = provider.provideVariants()
   }
 
   /**
@@ -36,26 +36,26 @@ public abstract class MainHandler {
    * Extension, Tasks and Model.
    */
   public void run() {
-    mModelManager.register()
-    mConfigurationManager.createNewConfigurations()
+    modelManager.register()
+    configurationManager.createNewConfigurations()
 
     //we use "all" instead of "each" because this set is empty until after project evaluated
     //with "all" it will execute the closure when the variants are getting created
-    mVariants.all { BaseVariant variant ->
-      owner.mLogger.info("----------------------------------------")
-      if (variant.buildType.debuggable || owner.mExtension.testReleaseBuildType) {
+    variants.all { BaseVariant variant ->
+      owner.logger.info("----------------------------------------")
+      if (variant.buildType.debuggable || owner.extension.testReleaseBuildType) {
         if (!isVariantInvalid(variant)) {
           VariantWrapper variantWrapper = createVariantWrapper(variant)
           variantWrapper.configureSourceSet()
-          owner.mTaskManager.createTestTask(variantWrapper)
-          owner.mModelManager.registerArtifact(variantWrapper)
+          owner.taskManager.createTestTask(variantWrapper)
+          owner.modelManager.registerArtifact(variantWrapper)
         }
       } else {
-        owner.mLogger.info("skipping non-debuggable variant: ${variant.name}")
+        owner.logger.info("skipping non-debuggable variant: ${variant.name}")
       }
     }
-    mLogger.info("----------------------------------------")
-    mLogger.info("Applied plugin")
+    logger.info("----------------------------------------")
+    logger.info("Applied plugin")
   }
 
   /**

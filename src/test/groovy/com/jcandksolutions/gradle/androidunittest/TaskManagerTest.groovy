@@ -27,137 +27,137 @@ import static org.mockito.Mockito.when
 
 public class TaskManagerTest {
   private static final String FLAVOR_DEBUG = "FlavorDebug"
-  private TaskManager mTarget
-  private VariantWrapper mVariant
-  private Task mClassesTask
-  private org.gradle.api.tasks.testing.Test mTestTask
-  private Task mTestClassesTask
-  private Set<Object> mFrom
-  private JavaCompile mTestCompileTask
-  private Task mAndroidCompileTask
-  private FileCollection mClasspath
-  private SourceDirectorySet mJava
-  private File mCompileDestinationDir
-  private CompileOptions mOptions
-  private TaskInputs mInputs
-  private FileTree mSource
-  private Copy mResourcesCopyTask
-  private File mMergedResourcesDir
-  private Task mProcessResourcesTask
-  private FileCollection mTestClasspath
-  private DirectoryReport mHTML
-  private File mVariantReportDestination
-  private File mMergedManifest
-  private File mMergedAssetsDir
-  private PackageExtractor mPackageExtractor
-  private HashMap<String, Object> mSystemProperties
-  private TestReport mTestReportTask
-  private File mReportDestinationDir
-  private Task mCheckTask
-  private MockProvider mProvider
+  private TaskManager target
+  private VariantWrapper variant
+  private Task classesTask
+  private org.gradle.api.tasks.testing.Test testTask
+  private Task testClassesTask
+  private Set<Object> from
+  private JavaCompile testCompileTask
+  private Task androidCompileTask
+  private FileCollection classpath
+  private SourceDirectorySet java
+  private File compileDestinationDir
+  private CompileOptions options
+  private TaskInputs inputs
+  private FileTree source
+  private Copy resourcesCopyTask
+  private File mergedResourcesDir
+  private Task processResourcesTask
+  private FileCollection testClasspath
+  private DirectoryReport html
+  private File variantReportDestination
+  private File mergedManifest
+  private File mergedAssetsDir
+  private PackageExtractor packageExtractor
+  private HashMap<String, Object> systemProperties
+  private TestReport testReportTask
+  private File reportDestinationDir
+  private Task checkTask
+  private MockProvider provider
 
   @Before
   public void setUp() {
-    mProvider = new MockProvider()
-    Project project = mProvider.provideProject()
-    mPackageExtractor = mProvider.providePackageExtractor()
-    mReportDestinationDir = mProvider.provideReportDestinationDir()
+    provider = new MockProvider()
+    Project project = provider.provideProject()
+    packageExtractor = provider.providePackageExtractor()
+    reportDestinationDir = provider.provideReportDestinationDir()
     TaskContainer tasks = mock(TaskContainer.class)
-    mTestTask = mock(org.gradle.api.tasks.testing.Test.class)
-    mTestClassesTask = mock(Task.class)
-    mClassesTask = mock(Task.class)
-    mVariant = mock(VariantWrapper.class)
+    testTask = mock(org.gradle.api.tasks.testing.Test.class)
+    testClassesTask = mock(Task.class)
+    classesTask = mock(Task.class)
+    variant = mock(VariantWrapper.class)
     SourceSet sourceSet = mock(SourceSet.class)
-    mInputs = mock(TaskInputs.class)
+    inputs = mock(TaskInputs.class)
     DefaultConfigurableFileCollection files = mock(DefaultConfigurableFileCollection.class)
-    mFrom = mock(Set.class)
-    mAndroidCompileTask = mock(Task.class)
-    mTestCompileTask = mock(JavaCompile.class)
-    mClasspath = mock(FileCollection.class)
-    mJava = mock(SourceDirectorySet.class)
-    mCompileDestinationDir = new File("destinationDir")
-    mOptions = mock(CompileOptions.class)
-    mSource = mock(FileTree.class)
-    mResourcesCopyTask = mock(Copy.class)
-    mMergedResourcesDir = new File("mergedResourcesDir")
-    mTestClasspath = mock(FileCollection.class)
+    from = mock(Set.class)
+    androidCompileTask = mock(Task.class)
+    testCompileTask = mock(JavaCompile.class)
+    classpath = mock(FileCollection.class)
+    java = mock(SourceDirectorySet.class)
+    compileDestinationDir = new File("destinationDir")
+    options = mock(CompileOptions.class)
+    source = mock(FileTree.class)
+    resourcesCopyTask = mock(Copy.class)
+    mergedResourcesDir = new File("mergedResourcesDir")
+    testClasspath = mock(FileCollection.class)
     TestTaskReports reports = mock(TestTaskReports.class)
-    mHTML = mock(DirectoryReport.class)
-    mVariantReportDestination = new File("reportDestination")
-    mSystemProperties = new HashMap<>()
-    mMergedManifest = new File("mergedManifest")
-    mMergedAssetsDir = new File("mergedAssetsDir")
-    mTestReportTask = mock(TestReport.class)
-    mCheckTask = mock(Task.class)
-    when(tasks.create("testFlavorDebug", org.gradle.api.tasks.testing.Test)).thenReturn(mTestTask)
-    when(tasks.create("testClasses")).thenReturn(mTestClassesTask)
-    when(tasks.create("test", TestReport)).thenReturn(mTestReportTask)
-    when(tasks.create("resourcesCopyTaskName", Copy.class)).thenReturn(mResourcesCopyTask)
-    when(tasks.getByName("classesTaskName")).thenReturn(mClassesTask)
-    when(tasks.getByName("compileJavaTaskName")).thenReturn(mTestCompileTask)
-    when(tasks.getByName("check")).thenReturn(mCheckTask)
+    html = mock(DirectoryReport.class)
+    variantReportDestination = new File("reportDestination")
+    systemProperties = new HashMap<>()
+    mergedManifest = new File("mergedManifest")
+    mergedAssetsDir = new File("mergedAssetsDir")
+    testReportTask = mock(TestReport.class)
+    checkTask = mock(Task.class)
+    when(tasks.create("testFlavorDebug", org.gradle.api.tasks.testing.Test)).thenReturn(testTask)
+    when(tasks.create("testClasses")).thenReturn(testClassesTask)
+    when(tasks.create("test", TestReport)).thenReturn(testReportTask)
+    when(tasks.create("resourcesCopyTaskName", Copy.class)).thenReturn(resourcesCopyTask)
+    when(tasks.getByName("classesTaskName")).thenReturn(classesTask)
+    when(tasks.getByName("compileJavaTaskName")).thenReturn(testCompileTask)
+    when(tasks.getByName("check")).thenReturn(checkTask)
     when(project.tasks).thenReturn(tasks)
-    when(mVariant.sourceSet).thenReturn(sourceSet)
-    when(mVariant.completeName).thenReturn("$FLAVOR_DEBUG")
-    when(mVariant.classpath).thenReturn(mClasspath)
-    when(mVariant.androidCompileTask).thenReturn(mAndroidCompileTask)
-    when(mVariant.compileDestinationDir).thenReturn(mCompileDestinationDir)
-    when(mVariant.resourcesCopyTaskName).thenReturn("resourcesCopyTaskName")
-    when(mVariant.realMergedResourcesDir).thenReturn("realMergedResourcesDir")
-    when(mVariant.mergedResourcesDir).thenReturn(mMergedResourcesDir)
-    when(mVariant.testClasspath).thenReturn(mTestClasspath)
-    when(mVariant.variantReportDestination).thenReturn(mVariantReportDestination)
-    when(mVariant.mergedManifest).thenReturn(mMergedManifest)
-    when(mVariant.mergedAssetsDir).thenReturn(mMergedAssetsDir)
+    when(variant.sourceSet).thenReturn(sourceSet)
+    when(variant.completeName).thenReturn("$FLAVOR_DEBUG")
+    when(variant.classpath).thenReturn(classpath)
+    when(variant.androidCompileTask).thenReturn(androidCompileTask)
+    when(variant.compileDestinationDir).thenReturn(compileDestinationDir)
+    when(variant.resourcesCopyTaskName).thenReturn("resourcesCopyTaskName")
+    when(variant.realMergedResourcesDir).thenReturn("realMergedResourcesDir")
+    when(variant.mergedResourcesDir).thenReturn(mergedResourcesDir)
+    when(variant.testClasspath).thenReturn(testClasspath)
+    when(variant.variantReportDestination).thenReturn(variantReportDestination)
+    when(variant.mergedManifest).thenReturn(mergedManifest)
+    when(variant.mergedAssetsDir).thenReturn(mergedAssetsDir)
     when(sourceSet.classesTaskName).thenReturn("classesTaskName")
-    when(sourceSet.java).thenReturn(mJava)
+    when(sourceSet.java).thenReturn(java)
     when(sourceSet.compileJavaTaskName).thenReturn("compileJavaTaskName")
-    when(mTestTask.inputs).thenReturn(mInputs)
-    when(mTestTask.reports).thenReturn(reports)
-    when(mTestTask.systemProperties).thenReturn(mSystemProperties)
-    when(reports.html).thenReturn(mHTML)
-    when(mInputs.sourceFiles).thenReturn(files)
-    when(files.from).thenReturn(mFrom)
-    when(mTestCompileTask.options).thenReturn(mOptions)
-    when(mTestCompileTask.source).thenReturn(mSource)
-    when(mTestCompileTask.destinationDir).thenReturn(mCompileDestinationDir)
-    when(mPackageExtractor.packageName).thenReturn("packageName")
-    mTarget = new TaskManager(mProvider.provideProject(), mProvider.provideBootClasspath(), mProvider.providePackageExtractor(), mReportDestinationDir, mProvider.provideLogger())
+    when(testTask.inputs).thenReturn(inputs)
+    when(testTask.reports).thenReturn(reports)
+    when(testTask.systemProperties).thenReturn(systemProperties)
+    when(reports.html).thenReturn(html)
+    when(inputs.sourceFiles).thenReturn(files)
+    when(files.from).thenReturn(from)
+    when(testCompileTask.options).thenReturn(options)
+    when(testCompileTask.source).thenReturn(source)
+    when(testCompileTask.destinationDir).thenReturn(compileDestinationDir)
+    when(packageExtractor.packageName).thenReturn("packageName")
+    target = new TaskManager(provider.provideProject(), provider.provideBootClasspath(), provider.providePackageExtractor(), reportDestinationDir, provider.provideLogger())
   }
 
   @Test
   public void testCreateTestTask() {
-    mTarget.createTestTask(mVariant)
-    verify(mClassesTask).group = null
-    verify(mClassesTask).description = null
-    verify(mTestTask).dependsOn(mClassesTask)
-    verify(mTestClassesTask).description = "Assembles the test classes directory."
-    verify(mTestClassesTask).dependsOn(mClassesTask)
-    verify(mFrom).clear()
-    verify(mTestCompileTask).dependsOn(mAndroidCompileTask)
-    verify(mTestCompileTask).group = null
-    verify(mTestCompileTask).description = null
-    verify(mTestCompileTask).classpath = mClasspath
-    verify(mTestCompileTask).source = mJava
-    verify(mTestCompileTask).destinationDir = mCompileDestinationDir
-    verify(mOptions).bootClasspath = "bootClasspath"
-    verify(mInputs).source(mSource)
-    verify(mResourcesCopyTask).from("realMergedResourcesDir")
-    verify(mResourcesCopyTask).into(mMergedResourcesDir)
-    verify(mResourcesCopyTask).dependsOn(mAndroidCompileTask)
-    verify(mTestTask).dependsOn(mResourcesCopyTask)
-    verify(mTestTask).classpath = mTestClasspath
-    verify(mTestTask).testClassesDir = mCompileDestinationDir
-    verify(mTestTask).group = JavaBasePlugin.VERIFICATION_GROUP
-    verify(mTestTask).description = "Run unit tests for Build '$FLAVOR_DEBUG'."
-    verify(mHTML).destination = mVariantReportDestination
-    verify(mTestTask).scanForTestClasses = false
+    target.createTestTask(variant)
+    verify(classesTask).group = null
+    verify(classesTask).description = null
+    verify(testTask).dependsOn(classesTask)
+    verify(testClassesTask).description = "Assembles the test classes directory."
+    verify(testClassesTask).dependsOn(classesTask)
+    verify(from).clear()
+    verify(testCompileTask).dependsOn(androidCompileTask)
+    verify(testCompileTask).group = null
+    verify(testCompileTask).description = null
+    verify(testCompileTask).classpath = classpath
+    verify(testCompileTask).source = java
+    verify(testCompileTask).destinationDir = compileDestinationDir
+    verify(options).bootClasspath = "bootClasspath"
+    verify(inputs).source(source)
+    verify(resourcesCopyTask).from("realMergedResourcesDir")
+    verify(resourcesCopyTask).into(mergedResourcesDir)
+    verify(resourcesCopyTask).dependsOn(androidCompileTask)
+    verify(testTask).dependsOn(resourcesCopyTask)
+    verify(testTask).classpath = testClasspath
+    verify(testTask).testClassesDir = compileDestinationDir
+    verify(testTask).group = JavaBasePlugin.VERIFICATION_GROUP
+    verify(testTask).description = "Run unit tests for Build '$FLAVOR_DEBUG'."
+    verify(html).destination = variantReportDestination
+    verify(testTask).scanForTestClasses = false
     //TODO:missing pattern testing
-    assertThat(mSystemProperties).contains(entry('android.manifest', mMergedManifest), entry('android.resources', mMergedResourcesDir), entry('android.assets', mMergedAssetsDir), entry('android.package', "packageName"))
-    verify(mTestReportTask).destinationDir = mReportDestinationDir
-    verify(mTestReportTask).description = 'Runs all unit tests.'
-    verify(mTestReportTask).group = JavaBasePlugin.VERIFICATION_GROUP
-    verify(mCheckTask).dependsOn(mTestReportTask)
-    verify(mTestReportTask).reportOn(mTestTask)
+    assertThat(systemProperties).contains(entry('android.manifest', mergedManifest), entry('android.resources', mergedResourcesDir), entry('android.assets', mergedAssetsDir), entry('android.package', "packageName"))
+    verify(testReportTask).destinationDir = reportDestinationDir
+    verify(testReportTask).description = 'Runs all unit tests.'
+    verify(testReportTask).group = JavaBasePlugin.VERIFICATION_GROUP
+    verify(checkTask).dependsOn(testReportTask)
+    verify(testReportTask).reportOn(testTask)
   }
 }

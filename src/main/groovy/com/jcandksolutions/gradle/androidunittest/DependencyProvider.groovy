@@ -20,19 +20,19 @@ import org.gradle.api.logging.Logger
  * Class that provides the dependencies for the plugin.
  */
 public class DependencyProvider {
-  private Project mProject
-  private BasePlugin mPlugin
-  private Boolean mIsAppPlugin
-  private AndroidUnitTestPluginExtension mExtension
-  private String mBootClasspath
-  private File mReportDestinationDir
-  private ModelManager mModelManager
+  private Project project
+  private BasePlugin plugin
+  private Boolean isAppPlugin
+  private AndroidUnitTestPluginExtension extension
+  private String bootClasspath
+  private File reportDestinationDir
+  private ModelManager modelManager
   /**
    * Instantiates a DependencyProvider.
    * @param project The Project being configured.
    */
   public DependencyProvider(Project project) {
-    mProject = project
+    this.project = project
   }
 
   /**
@@ -40,7 +40,7 @@ public class DependencyProvider {
    * @return The Project.
    */
   public Project provideProject() {
-    return mProject
+    return project
   }
 
   /**
@@ -48,12 +48,12 @@ public class DependencyProvider {
    * @return The Extension.
    */
   public AndroidUnitTestPluginExtension provideExtension() {
-    if (mExtension == null) {
-      mExtension = mProject.extensions.create("androidUnitTest", AndroidUnitTestPluginExtension)
-      mExtension.downloadDependenciesSources = true
-      mExtension.downloadTestDependenciesSources = true
+    if (extension == null) {
+      extension = project.extensions.create("androidUnitTest", AndroidUnitTestPluginExtension)
+      extension.downloadDependenciesSources = true
+      extension.downloadTestDependenciesSources = true
     }
-    return mExtension
+    return extension
   }
 
   /**
@@ -61,10 +61,10 @@ public class DependencyProvider {
    * @return The ModelManager.
    */
   public ModelManager provideModelManager() {
-    if (mModelManager == null) {
-      mModelManager = new ModelManager(provideAndroidPlugin())
+    if (modelManager == null) {
+      modelManager = new ModelManager(provideAndroidPlugin())
     }
-    return mModelManager
+    return modelManager
   }
 
   /**
@@ -99,14 +99,14 @@ public class DependencyProvider {
    * @throws IllegalStateException if neither of the plugins is applied.
    */
   public boolean isAppPlugin() {
-    if (mIsAppPlugin == null) {
-      mIsAppPlugin = mProject.plugins.withType(AppPlugin)
-      if (!mIsAppPlugin && !mProject.plugins.withType(LibraryPlugin)) {
-        mIsAppPlugin = null
+    if (isAppPlugin == null) {
+      isAppPlugin = project.plugins.withType(AppPlugin)
+      if (!isAppPlugin && !project.plugins.withType(LibraryPlugin)) {
+        isAppPlugin = null
         throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
       }
     }
-    return mIsAppPlugin
+    return isAppPlugin
   }
 
   /**
@@ -148,10 +148,10 @@ public class DependencyProvider {
    * @return The BootClasspath.
    */
   public String provideBootClasspath() {
-    if (mBootClasspath == null) {
-      mBootClasspath = provideAndroidPlugin().bootClasspath.join(File.pathSeparator)
+    if (bootClasspath == null) {
+      bootClasspath = provideAndroidPlugin().bootClasspath.join(File.pathSeparator)
     }
-    return mBootClasspath
+    return bootClasspath
   }
 
   /**
@@ -172,10 +172,10 @@ public class DependencyProvider {
    * @return The Report Destination Directory.
    */
   public File provideReportDestinationDir() {
-    if (mReportDestinationDir == null) {
-      mReportDestinationDir = mProject.file("$mProject.buildDir${File.separator}test-report")
+    if (reportDestinationDir == null) {
+      reportDestinationDir = project.file("$project.buildDir${File.separator}test-report")
     }
-    return mReportDestinationDir
+    return reportDestinationDir
   }
 
   /**
@@ -183,7 +183,7 @@ public class DependencyProvider {
    * @return The Logger.
    */
   public Logger provideLogger() {
-    return mProject.logger
+    return project.logger
   }
 
   /**
@@ -213,16 +213,16 @@ public class DependencyProvider {
   }
 
   private BasePlugin provideLibraryPlugin() {
-    if (mPlugin == null) {
-      mPlugin = mProject.plugins.withType(LibraryPlugin).toList()[0]
+    if (plugin == null) {
+      plugin = project.plugins.withType(LibraryPlugin).toList()[0]
     }
-    return mPlugin
+    return plugin
   }
 
   private BasePlugin provideAppPlugin() {
-    if (mPlugin == null) {
-      mPlugin = mProject.plugins.withType(AppPlugin).toList()[0]
+    if (plugin == null) {
+      plugin = project.plugins.withType(AppPlugin).toList()[0]
     }
-    return mPlugin
+    return plugin
   }
 }

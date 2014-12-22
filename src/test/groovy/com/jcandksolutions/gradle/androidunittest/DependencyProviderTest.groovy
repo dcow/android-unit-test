@@ -27,95 +27,95 @@ import static org.mockito.Mockito.verify
 import static org.mockito.Mockito.when
 
 public class DependencyProviderTest {
-  private Project mProject
-  private DependencyProvider mTarget
-  private AppPlugin mAppPlugin
-  private PluginContainer mPlugins
-  private BaseExtension mAndroidExtension
-  private ConfigurationContainer mConfigurations
-  private AndroidUnitTestPluginExtension mExtension
-  private File mReportDestinationDir
-  private Logger mLogger
+  private Project project
+  private DependencyProvider target
+  private AppPlugin appPlugin
+  private PluginContainer plugins
+  private BaseExtension androidExtension
+  private ConfigurationContainer configurations
+  private AndroidUnitTestPluginExtension extension
+  private File reportDestinationDir
+  private Logger logger
 
   @Before
   public void setUp() {
-    mProject = mock(Project.class)
-    mPlugins = mock(PluginContainer)
-    mAndroidExtension = mock(AppExtension)
-    mConfigurations = mock(ConfigurationContainer)
+    project = mock(Project.class)
+    plugins = mock(PluginContainer)
+    androidExtension = mock(AppExtension)
+    configurations = mock(ConfigurationContainer)
     PluginCollection<AppPlugin> appPlugins = new DefaultPluginCollection<>(AppPlugin)
-    mAppPlugin = mock(AppPlugin)
-    appPlugins.add(mAppPlugin)
+    appPlugin = mock(AppPlugin)
+    appPlugins.add(appPlugin)
     ExtensionContainer extensions = mock(ExtensionContainer.class)
-    mExtension = mock(AndroidUnitTestPluginExtension)
-    mReportDestinationDir = new File("reportDestinationDir")
-    mLogger = mock(Logger.class)
+    extension = mock(AndroidUnitTestPluginExtension)
+    reportDestinationDir = new File("reportDestinationDir")
+    logger = mock(Logger.class)
     List<String> bootClasspath = ["1", "2", "3"]
-    when(mProject.plugins).thenReturn(mPlugins)
-    when(mProject.configurations).thenReturn(mConfigurations)
-    when(mProject.extensions).thenReturn(extensions)
-    when(mProject.buildDir).thenReturn(new File("build"))
-    when(mProject.file("build${File.separator}test-report")).thenReturn(mReportDestinationDir)
-    when(mProject.logger).thenReturn(mLogger)
-    when(mPlugins.withType(AppPlugin)).thenReturn(appPlugins)
-    when(mAppPlugin.extension).thenReturn(mAndroidExtension)
-    when(extensions.create("androidUnitTest", AndroidUnitTestPluginExtension)).thenReturn(mExtension)
-    when(mAppPlugin.bootClasspath).thenReturn(bootClasspath)
-    mTarget = new DependencyProvider(mProject)
+    when(project.plugins).thenReturn(plugins)
+    when(project.configurations).thenReturn(configurations)
+    when(project.extensions).thenReturn(extensions)
+    when(project.buildDir).thenReturn(new File("build"))
+    when(project.file("build${File.separator}test-report")).thenReturn(reportDestinationDir)
+    when(project.logger).thenReturn(logger)
+    when(plugins.withType(AppPlugin)).thenReturn(appPlugins)
+    when(appPlugin.extension).thenReturn(androidExtension)
+    when(extensions.create("androidUnitTest", AndroidUnitTestPluginExtension)).thenReturn(extension)
+    when(appPlugin.bootClasspath).thenReturn(bootClasspath)
+    target = new DependencyProvider(project)
   }
 
   @Test
   public void testProvideProject() {
-    assertThat(mTarget.provideProject()).isEqualTo(mProject)
+    assertThat(target.provideProject()).isEqualTo(project)
   }
 
   @Test
   public void testProvideExtension() {
-    assertThat(mTarget.provideExtension()).isEqualTo(mExtension)
-    verify(mExtension).downloadTestDependenciesSources = true
-    verify(mExtension).downloadDependenciesSources = true
+    assertThat(target.provideExtension()).isEqualTo(extension)
+    verify(extension).downloadTestDependenciesSources = true
+    verify(extension).downloadDependenciesSources = true
   }
 
   @Test
   public void testProvideModelManager() {
-    assertThat(mTarget.provideModelManager()).isExactlyInstanceOf(ModelManager)
+    assertThat(target.provideModelManager()).isExactlyInstanceOf(ModelManager)
   }
 
   @Test
   public void testProvideConfigurationManager() {
-    assertThat(mTarget.provideConfigurationManager()).isExactlyInstanceOf(ConfigurationManager)
+    assertThat(target.provideConfigurationManager()).isExactlyInstanceOf(ConfigurationManager)
   }
 
   @Test
   public void testProvideTaskManager() {
-    assertThat(mTarget.provideTaskManager()).isExactlyInstanceOf(TaskManager)
+    assertThat(target.provideTaskManager()).isExactlyInstanceOf(TaskManager)
   }
 
   @Test
   public void testProvideDefaultConfigData() {
     ProductFlavorData defaultConfigData = mock(ProductFlavorData)
-    when(mAppPlugin.defaultConfigData).thenReturn(defaultConfigData)
-    assertThat(mTarget.provideDefaultConfigData()).isEqualTo(defaultConfigData)
+    when(appPlugin.defaultConfigData).thenReturn(defaultConfigData)
+    assertThat(target.provideDefaultConfigData()).isEqualTo(defaultConfigData)
   }
 
   @Test
   public void testIsAppPluginWhenAppPluginProvided() {
-    assertThat(mTarget.appPlugin).isTrue()
+    assertThat(target.appPlugin).isTrue()
   }
 
   @Test
   public void testIsAppPluginWhenLibraryPluginProvided() {
     PluginCollection<LibraryPlugin> libraryPlugins = mock(PluginCollection)
-    when(mPlugins.withType(AppPlugin)).thenReturn(null)
-    when(mPlugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
-    assertThat(mTarget.appPlugin).isFalse()
+    when(plugins.withType(AppPlugin)).thenReturn(null)
+    when(plugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
+    assertThat(target.appPlugin).isFalse()
   }
 
   @Test
   public void testIsAppPluginWhenNoAndroidPluginProvided() {
-    when(mPlugins.withType(AppPlugin)).thenReturn(null)
+    when(plugins.withType(AppPlugin)).thenReturn(null)
     try {
-      mTarget.appPlugin
+      target.appPlugin
       fail("IllegalStateException should've been thrown")
     } catch (IllegalStateException ignored) {
     }
@@ -123,7 +123,7 @@ public class DependencyProviderTest {
 
   @Test
   public void testProvideAndroidPluginWithAppPlugin() {
-    assertThat(mTarget.provideAndroidPlugin()).isEqualTo(mAppPlugin)
+    assertThat(target.provideAndroidPlugin()).isEqualTo(appPlugin)
   }
 
   @Test
@@ -131,36 +131,36 @@ public class DependencyProviderTest {
     PluginCollection<LibraryPlugin> libraryPlugins = new DefaultPluginCollection<>(LibraryPlugin)
     LibraryPlugin libraryPlugin = mock(LibraryPlugin)
     libraryPlugins.add(libraryPlugin)
-    when(mPlugins.withType(AppPlugin)).thenReturn(null)
-    when(mPlugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
-    assertThat(mTarget.provideAndroidPlugin()).isEqualTo(libraryPlugin)
+    when(plugins.withType(AppPlugin)).thenReturn(null)
+    when(plugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
+    assertThat(target.provideAndroidPlugin()).isEqualTo(libraryPlugin)
   }
 
   @Test
   public void testProvidePackageExtractor() {
-    assertThat(mTarget.providePackageExtractor()).isExactlyInstanceOf(PackageExtractor)
+    assertThat(target.providePackageExtractor()).isExactlyInstanceOf(PackageExtractor)
   }
 
   @Test
   public void testProvideAndroidExtension() {
-    assertThat(mTarget.provideAndroidExtension()).isEqualTo(mAndroidExtension)
+    assertThat(target.provideAndroidExtension()).isEqualTo(androidExtension)
   }
 
   @Test
   public void testProvideConfigurations() {
-    assertThat(mTarget.provideConfigurations()).isEqualTo(mConfigurations)
+    assertThat(target.provideConfigurations()).isEqualTo(configurations)
   }
 
   @Test
   public void testProvideBootClasspath() {
-    assertThat(mTarget.provideBootClasspath()).contains("1${File.pathSeparator}2${File.pathSeparator}3")
+    assertThat(target.provideBootClasspath()).contains("1${File.pathSeparator}2${File.pathSeparator}3")
   }
 
   @Test
   public void testProvideVariantsWithAppPlugin() {
     DefaultDomainObjectSet<ApplicationVariant> variants = new DefaultDomainObjectSet<>(ApplicationVariant)
-    when(((AppExtension) mAndroidExtension).applicationVariants).thenReturn(variants)
-    assertThat(mTarget.provideVariants()).isEqualTo(variants)
+    when(((AppExtension) androidExtension).applicationVariants).thenReturn(variants)
+    assertThat(target.provideVariants()).isEqualTo(variants)
   }
 
   @Test
@@ -169,27 +169,27 @@ public class DependencyProviderTest {
     LibraryPlugin libraryPlugin = mock(LibraryPlugin)
     libraryPlugins.add(libraryPlugin)
     DefaultDomainObjectSet<LibraryVariant> variants = new DefaultDomainObjectSet<>(LibraryVariant)
-    mAndroidExtension = mock(LibraryExtension)
-    when(mPlugins.withType(AppPlugin)).thenReturn(null)
-    when(mPlugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
-    when(libraryPlugin.extension).thenReturn(mAndroidExtension)
-    when(((LibraryExtension) mAndroidExtension).libraryVariants).thenReturn(variants)
-    assertThat(mTarget.provideVariants()).isEqualTo(variants)
+    androidExtension = mock(LibraryExtension)
+    when(plugins.withType(AppPlugin)).thenReturn(null)
+    when(plugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
+    when(libraryPlugin.extension).thenReturn(androidExtension)
+    when(((LibraryExtension) androidExtension).libraryVariants).thenReturn(variants)
+    assertThat(target.provideVariants()).isEqualTo(variants)
   }
 
   @Test
   public void testProvideReportDestinationDir() {
-    assertThat(mTarget.provideReportDestinationDir()).isEqualTo(mReportDestinationDir)
+    assertThat(target.provideReportDestinationDir()).isEqualTo(reportDestinationDir)
   }
 
   @Test
   public void testProvideLogger() {
-    assertThat(mTarget.provideLogger()).isEqualTo(mLogger)
+    assertThat(target.provideLogger()).isEqualTo(logger)
   }
 
   @Test
   public void testProvideAppHandlerWithAppPlugin() {
-    assertThat(mTarget.provideHandler()).isInstanceOf(AppHandler.class)
+    assertThat(target.provideHandler()).isInstanceOf(AppHandler.class)
   }
 
   @Test
@@ -198,23 +198,23 @@ public class DependencyProviderTest {
     PluginCollection<LibraryPlugin> libraryPlugins = new DefaultPluginCollection<>(LibraryPlugin)
     LibraryPlugin libraryPlugin = mock(LibraryPlugin)
     libraryPlugins.add(libraryPlugin)
-    when(mPlugins.withType(AppPlugin)).thenReturn(null)
-    when(mPlugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
+    when(plugins.withType(AppPlugin)).thenReturn(null)
+    when(plugins.withType(LibraryPlugin)).thenReturn(libraryPlugins)
     when(libraryPlugin.bootClasspath).thenReturn(bootClasspath)
     LibraryExtension extension = mock(LibraryExtension.class)
     when(libraryPlugin.extension).thenReturn(extension)
-    assertThat(mTarget.provideHandler()).isInstanceOf(LibraryHandler.class)
+    assertThat(target.provideHandler()).isInstanceOf(LibraryHandler.class)
   }
 
   @Test
   public void testProvideAppVariantWrapper() {
     ApplicationVariant variant = mock(ApplicationVariant.class)
-    assertThat(mTarget.provideAppVariantWrapper(variant)).isInstanceOf(AppVariantWrapper.class)
+    assertThat(target.provideAppVariantWrapper(variant)).isInstanceOf(AppVariantWrapper.class)
   }
 
   @Test
   public void testProvideLibraryVariantWrapper() {
     LibraryVariant variant = mock(LibraryVariant.class)
-    assertThat(mTarget.provideLibraryVariantWrapper(variant)).isInstanceOf(LibraryVariantWrapper.class)
+    assertThat(target.provideLibraryVariantWrapper(variant)).isInstanceOf(LibraryVariantWrapper.class)
   }
 }
